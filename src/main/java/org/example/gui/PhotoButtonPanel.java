@@ -2,6 +2,8 @@ package org.example.gui;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Arrays;
+
 import org.example.util.GuiUtils;
 
 public class PhotoButtonPanel extends JPanel {
@@ -18,58 +20,62 @@ public class PhotoButtonPanel extends JPanel {
 
     private JButton createMoveLeftButton() {
         JButton moveButton = new JButton("<");
-
-        moveButton.addActionListener(e -> {
-            Container parent = getParent().getParent();
-            int index = parent.getComponentZOrder(this.getParent());
-
-            if (index == 0) {
-                return;
-            }
-
-            int indexToSwap = index - 2;
-
-            if (parent instanceof PreviewPanel previewPanel) {
-                previewPanel.switchEvidence(indexToSwap, index);
-            }
-        });
+        addMoveButtonActionListener(moveButton, -1);
 
         return moveButton;
     }
 
     private JButton createMoveRightButton() {
         JButton moveButton = new JButton(">");
+        addMoveButtonActionListener(moveButton, 1);
 
-        moveButton.requestFocusInWindow();
+        return moveButton;
+    }
 
+    private void addMoveButtonActionListener(JButton moveButton, int movement) {
         moveButton.addActionListener(e -> {
-            Container parent = getParent().getParent();
-            int index = parent.getComponentZOrder(this.getParent());
-            int indexToSwap = index + 2;
+            Container previewPanelComp = getParent().getParent();
+            Container parentComp = getParent();
 
-            if (indexToSwap >= parent.getComponentCount()) {
+            GridBagLayout gridBagLayout = (GridBagLayout) previewPanelComp.getLayout();
+
+            int index = gridBagLayout.getConstraints(parentComp).gridx;
+            int indexToSwap = index + movement;
+
+            if (indexToSwap < 0 || indexToSwap >= previewPanelComp.getComponentCount()) {
                 return;
             }
 
-            if (parent instanceof PreviewPanel previewPanel) {
-                previewPanel.switchEvidence(index, indexToSwap);
+            if (previewPanelComp instanceof PreviewPanel previewPanel) {
+                previewPanel.switchEvidence(indexToSwap, index);
             }
         });
-
-        return moveButton;
     }
 
     private JButton createRemoveButton() {
         JButton removeButton = new JButton("Remove");
 
         removeButton.addActionListener(e -> {
-            Container parent = getParent().getParent();
+            Container previewPanelComp = getParent().getParent();
+            Container parentComp = getParent();
 
-            int position = parent.getComponentZOrder(this.getParent());
-            parent.remove(position + 1);
-            parent.remove(position);
+            GridBagLayout gridBagLayout = (GridBagLayout) previewPanelComp.getLayout();
 
-            GuiUtils.refreshComponent(parent);
+            int indexOfRemovedComp = gridBagLayout.getConstraints(parentComp).gridx;
+
+            previewPanelComp.remove(parentComp);
+
+            Arrays.stream(previewPanelComp.getComponents())
+                .filter(component -> gridBagLayout.getConstraints(component).gridx > indexOfRemovedComp)
+                .forEach(component -> {
+                    GridBagConstraints constraints = gridBagLayout.getConstraints(component);
+                    constraints.gridx--;
+
+                    previewPanelComp.remove(component);
+                    previewPanelComp.add(component, constraints);
+                });
+
+            GuiUtils.refreshComponent(previewPanelComp);
         });
 
         removeButton.setAlignmentX(Component.CENTER_ALIGNMENT);

@@ -19,14 +19,18 @@ public class PreviewPanel extends JPanel {
     private final int acValue;
     private final ScreenshotService screenshotService = new ScreenshotService();
 
+    private GridBagConstraints constraints;
+    private GridBagLayout layout;
+
     public PreviewPanel(int acValue) {
         this.acValue = acValue;
-        setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+
+        setLayout();
     }
 
     public PreviewPanel(int acValue, List<File> filesToAdd) {
         this.acValue = acValue;
-        setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+        setLayout();
 
         for (File file : filesToAdd) {
             try {
@@ -37,12 +41,22 @@ public class PreviewPanel extends JPanel {
         }
     }
 
-    public void addEvidence(BufferedImage screenshot) {
-        add(new Photo(screenshot));
-        add(Box.createRigidArea(new Dimension(5, 0)));
+    private void setLayout() {
+        layout = new GridBagLayout();
+        setLayout(layout);
+
+        constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.insets = new Insets(0, 10, 0, 10);
     }
 
-    private String getTabValue() {
+    public void addEvidence(BufferedImage screenshot) {
+        constraints.gridx = getComponentCount();
+        add(new Photo(screenshot), constraints);
+    }
+
+    public String getTabValue() {
         if (acValue <= 0) {
             return getRegressionTabName();
         }
@@ -50,17 +64,25 @@ public class PreviewPanel extends JPanel {
         return "AC_" + acValue;
     }
 
+    private Component[] getComponentsInGbcOrder() {
+        Component[] components = new Component[getComponentCount()];
+        for (Component component : getComponents()) {
+            components[layout.getConstraints(component).gridx] = component;
+        }
+
+        return components;
+    }
+
     public String saveAllEvidence(String userType, File folder) {
         String tabValue = getTabValue();
 
         StringBuilder generatedText = new StringBuilder(tabValue + ":\n\n ");
 
-        Component[] components = getComponents();
-        for (int i = 0; i < components.length; i = i + 2) {
-            Component component = components[i];
+        for (Component component : getComponentsInGbcOrder()) {
+            int gridx = layout.getConstraints(component).gridx;
 
             if (component instanceof Photo photo) {
-                String fileName = userType + "_" + tabValue + "_" + ((i/2) + 1);
+                String fileName = userType + "_" + tabValue + "_" + (gridx + 1);
                 fileName = verifyFileName(fileName, folder.listFiles());
 
                 generatedText.append("!").append(fileName).append(".png").append("|thumbnail! ");
@@ -119,17 +141,25 @@ public class PreviewPanel extends JPanel {
     }
 
     public void switchEvidence(int indexToSwap, int index) {
-        Component[] components = getComponents();
+        Component componentToSwap = getComponentWithGridxPosition(indexToSwap);
+        GridBagConstraints constraintsToSwap = layout.getConstraints(componentToSwap);
 
-        Component componentToSwap = components[indexToSwap];
-        Component component = components[index];
+        Component component = getComponentWithGridxPosition(index);
+        GridBagConstraints constraints = layout.getConstraints(component);
 
-        remove(componentToSwap);
         remove(component);
+        remove(componentToSwap);
 
-        add(component, indexToSwap);
-        add(componentToSwap, index);
+        add(component, constraintsToSwap);
+        add(componentToSwap, constraints);
 
         GuiUtils.refreshComponent(this);
+    }
+
+    private Component getComponentWithGridxPosition(int gridx) {
+        return Arrays.stream(getComponents())
+            .filter(component -> layout.getConstraints(component).gridx == gridx)
+            .findFirst()
+            .orElse(null);
     }
 }

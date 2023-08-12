@@ -4,6 +4,8 @@ import static java.util.Objects.isNull;
 import static org.example.model.TabNames.REGRESSION;
 
 import javax.swing.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
@@ -17,6 +19,7 @@ public class AcTabbedPane extends JTabbedPane {
 
     public AcTabbedPane(List<File> files) {
         addAcTab(files);
+        addMouseListener();
     }
 
     public AcTabbedPane(List<File> files, boolean isRegression) {
@@ -25,6 +28,7 @@ public class AcTabbedPane extends JTabbedPane {
         } else {
             addAcTab(files);
         }
+        addMouseListener();
     }
 
     private void addAcTab(List<File> files) {
@@ -126,5 +130,49 @@ public class AcTabbedPane extends JTabbedPane {
     private void selectNewComponent(ScrollPane scrollPane) {
         setSelectedComponent(scrollPane);
         GuiUtils.refreshComponent(this);
+    }
+
+    private void addMouseListener() {
+        addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                if (e.getModifiersEx() == MouseEvent.META_DOWN_MASK && e.getClickCount() == 1) {
+                    int selectedIndex = getSelectedIndex();
+
+                    if (getTabCount() > 1 && selectedIndex == getTabCount() - 1 && getTitleAt(selectedIndex).startsWith("AC ")) {
+                        JPopupMenu menu = new JPopupMenu();
+
+                        JMenuItem deleteMenuItem = new JMenuItem("Delete");
+                        deleteMenuItem.addActionListener(e1 -> {
+                            removeTabAt(selectedIndex);
+                            GuiUtils.refreshComponent(settings.getFrame());
+                        });
+                        menu.add(deleteMenuItem);
+
+                        menu.show(e.getComponent(), e.getX(), e.getY());
+                    }
+                }
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+
+            }
+        });
     }
 }

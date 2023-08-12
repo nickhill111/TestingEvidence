@@ -44,47 +44,6 @@ public class UserTabbedPane extends JTabbedPane {
         addMouseListener();
     }
 
-    private void addMouseListener() {
-        addMouseListener(new MouseListener() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                if (e.getModifiersEx() == MouseEvent.META_DOWN_MASK && e.getClickCount() == 1) {
-                    JPopupMenu menu = new JPopupMenu();
-
-                    JMenuItem deleteMenuItem = new JMenuItem("Delete");
-                    deleteMenuItem.addActionListener(e1 -> {
-                        int index = getSelectedIndex();
-                        removeTabAt(index);
-                        GuiUtils.refreshComponent(settings.getUserTabbedPane());
-                    });
-                    menu.add(deleteMenuItem);
-
-                    menu.show(e.getComponent(), e.getX(), e.getY());
-                }
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-
-            }
-        });
-    }
-
     private void addUserTypeTabs(List<String> userTypes, File[] evidenceToOpen) {
         for (String userType : userTypes) {
             List<File> userTypeFiles = Arrays.stream(evidenceToOpen)
@@ -164,5 +123,46 @@ public class UserTabbedPane extends JTabbedPane {
         }
 
         return false;
+    }
+
+    private void addMouseListener() {
+        addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                if (getTabCount() > 1 && e.getModifiersEx() == MouseEvent.META_DOWN_MASK && e.getClickCount() == 1) {
+                    JPopupMenu menu = new JPopupMenu();
+
+                    JMenuItem deleteMenuItem = new JMenuItem("Delete");
+                    deleteMenuItem.addActionListener(e1 -> {
+                        int index = getSelectedIndex();
+                        removeTabAt(index);
+                        GuiUtils.refreshComponent(settings.getUserTabbedPane());
+                    });
+                    menu.add(deleteMenuItem);
+
+                    menu.show(e.getComponent(), e.getX(), e.getY());
+                }
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+
+            }
+        });
     }
 }
