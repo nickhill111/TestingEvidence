@@ -1,4 +1,4 @@
-package org.example.gui;
+package org.nickhill111.gui;
 
 import javax.swing.*;
 import java.awt.*;
@@ -6,11 +6,11 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-import org.example.TestingEvidenceApplication;
-import org.example.data.Settings;
-import org.example.service.SavingService;
-import org.example.service.ScreenshotService;
-import org.example.util.DialogUtils;
+import org.nickhill111.TestingEvidenceApplication;
+import org.nickhill111.data.Settings;
+import org.nickhill111.service.SavingService;
+import org.nickhill111.service.ScreenshotService;
+import org.nickhill111.util.DialogUtils;
 
 public class MenuBar extends JMenuBar {
     private final Settings settings = Settings.getInstance();

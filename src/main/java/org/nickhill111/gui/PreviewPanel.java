@@ -1,4 +1,4 @@
-package org.example.gui;
+package org.nickhill111.gui;
 
 import static java.util.Objects.nonNull;
 
@@ -10,10 +10,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import org.example.model.RegressionTab;
-import org.example.service.ScreenshotService;
-import org.example.util.DialogUtils;
-import org.example.util.GuiUtils;
+import org.nickhill111.model.RegressionTab;
+import org.nickhill111.service.ScreenshotService;
+import org.nickhill111.util.DialogUtils;
+import org.nickhill111.util.GuiUtils;
 
 public class PreviewPanel extends JPanel {
     private final int acValue;

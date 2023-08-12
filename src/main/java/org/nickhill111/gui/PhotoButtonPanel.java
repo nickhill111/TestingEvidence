@@ -1,10 +1,10 @@
-package org.example.gui;
+package org.nickhill111.gui;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.Arrays;
 
-import org.example.util.GuiUtils;
+import org.nickhill111.util.GuiUtils;
 
 public class PhotoButtonPanel extends JPanel {
 

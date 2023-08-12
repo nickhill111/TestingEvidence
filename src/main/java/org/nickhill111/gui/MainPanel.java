@@ -1,12 +1,12 @@
-package org.example.gui;
+package org.nickhill111.gui;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import org.apache.commons.io.FileUtils;
-import org.example.data.Settings;
-import org.example.util.DialogUtils;
+import org.nickhill111.data.Settings;
+import org.nickhill111.util.DialogUtils;
 
 public class MainPanel extends JPanel {
     Settings settings = Settings.getInstance();

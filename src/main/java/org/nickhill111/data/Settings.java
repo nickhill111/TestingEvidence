@@ -1,4 +1,4 @@
-package org.example.data;
+package org.nickhill111.data;
 
 import java.awt.*;
 import java.io.File;
@@ -6,9 +6,9 @@ import java.io.File;
 import lc.kra.system.keyboard.GlobalKeyboardHook;
 import lombok.Getter;
 import lombok.Setter;
-import org.example.gui.MainPanel;
-import org.example.gui.ToolBar;
-import org.example.gui.UserTabbedPane;
+import org.nickhill111.gui.MainPanel;
+import org.nickhill111.gui.ToolBar;
+import org.nickhill111.gui.UserTabbedPane;
 
 import static java.util.Objects.nonNull;
 

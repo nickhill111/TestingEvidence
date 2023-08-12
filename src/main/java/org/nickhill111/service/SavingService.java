@@ -1,4 +1,4 @@
-package org.example.service;
+package org.nickhill111.service;
 
 import static java.util.Objects.nonNull;
 
@@ -10,10 +10,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.io.FileUtils;
-import org.example.TestingEvidenceApplication;
-import org.example.data.Settings;
-import org.example.gui.PreviewPanel;
-import org.example.util.DialogUtils;
+import org.nickhill111.TestingEvidenceApplication;
+import org.nickhill111.data.Settings;
+import org.nickhill111.gui.PreviewPanel;
+import org.nickhill111.util.DialogUtils;
 public class SavingService {
     private final Settings settings = Settings.getInstance();
 

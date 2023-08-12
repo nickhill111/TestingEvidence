@@ -1,4 +1,4 @@
-package org.example.service;
+package org.nickhill111.service;
 
 import static java.util.Objects.nonNull;
 
@@ -7,11 +7,11 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import org.example.data.Settings;
-import org.example.gui.MainPanel;
-import org.example.gui.ScrollPane;
-import org.example.util.DialogUtils;
-import org.example.util.GuiUtils;
+import org.nickhill111.data.Settings;
+import org.nickhill111.gui.MainPanel;
+import org.nickhill111.gui.ScrollPane;
+import org.nickhill111.util.DialogUtils;
+import org.nickhill111.util.GuiUtils;
 
 public class ScreenshotService {
     Settings settings = Settings.getInstance();

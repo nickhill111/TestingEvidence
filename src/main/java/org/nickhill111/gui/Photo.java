@@ -1,4 +1,4 @@
-package org.example.gui;
+package org.nickhill111.gui;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Map;
 
 import lombok.Getter;
-import org.example.data.Settings;
-import org.example.util.GuiUtils;
+import org.nickhill111.data.Settings;
+import org.nickhill111.util.GuiUtils;
 import org.imgscalr.Scalr;
 
 @Getter

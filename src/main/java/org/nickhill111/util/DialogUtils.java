@@ -1,4 +1,4 @@
-package org.example.util;
+package org.nickhill111.util;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -7,8 +7,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import org.example.data.Settings;
-import org.example.gui.UserTabbedPane;
+import org.nickhill111.data.Settings;
+import org.nickhill111.gui.UserTabbedPane;
 
 public class DialogUtils {
     static Settings settings = Settings.getInstance();

@@ -1,4 +1,4 @@
-package org.example.util;
+package org.nickhill111.util;
 
 import java.awt.*;
 

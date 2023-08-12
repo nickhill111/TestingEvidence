@@ -1,7 +1,7 @@
-package org.example.gui;
+package org.nickhill111.gui;
 
 import static java.util.Objects.isNull;
-import static org.example.model.TabNames.REGRESSION;
+import static org.nickhill111.model.TabNames.REGRESSION;
 
 import javax.swing.*;
 import java.awt.event.MouseEvent;
@@ -9,10 +9,10 @@ import java.awt.event.MouseListener;
 import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
-import org.example.data.Settings;
-import org.example.model.RegressionTab;
-import org.example.util.DialogUtils;
-import org.example.util.GuiUtils;
+import org.nickhill111.data.Settings;
+import org.nickhill111.model.RegressionTab;
+import org.nickhill111.util.DialogUtils;
+import org.nickhill111.util.GuiUtils;
 
 public class AcTabbedPane extends JTabbedPane {
     private final Settings settings = Settings.getInstance();

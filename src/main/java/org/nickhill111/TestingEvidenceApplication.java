@@ -1,4 +1,4 @@
-package org.example;
+package org.nickhill111;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -10,11 +10,11 @@ import java.io.File;
 import lc.kra.system.keyboard.GlobalKeyboardHook;
 import lc.kra.system.keyboard.event.GlobalKeyAdapter;
 import lc.kra.system.keyboard.event.GlobalKeyEvent;
-import org.example.data.Settings;
-import org.example.gui.MainPanel;
-import org.example.gui.MenuBar;
-import org.example.service.ScreenshotService;
-import org.example.util.DialogUtils;
+import org.nickhill111.data.Settings;
+import org.nickhill111.gui.MainPanel;
+import org.nickhill111.gui.MenuBar;
+import org.nickhill111.service.ScreenshotService;
+import org.nickhill111.util.DialogUtils;
 
 public class TestingEvidenceApplication {
     private final Settings settings = Settings.getInstance();

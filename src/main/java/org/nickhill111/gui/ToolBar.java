@@ -1,10 +1,10 @@
-package org.example.gui;
+package org.nickhill111.gui;
 
 import javax.swing.*;
 import java.awt.*;
-import org.example.data.Settings;
-import org.example.service.SavingService;
-import org.example.service.ScreenshotService;
+import org.nickhill111.data.Settings;
+import org.nickhill111.service.SavingService;
+import org.nickhill111.service.ScreenshotService;
 
 public class ToolBar extends JToolBar {
     private final Settings settings = Settings.getInstance();
