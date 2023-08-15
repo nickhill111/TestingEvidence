@@ -65,7 +65,7 @@ public class Photo extends JPanel {
                             ac.addActionListener(e1 -> {
                                 if (e.getSource() instanceof Photo photo) {
                                     photo.getParent().remove(photo);
-                                    previewPanel.add(photo);
+                                    previewPanel.addEvidence(photo.getOriginalImage());
 
                                     GuiUtils.refreshComponent(settings.getFrame());
                                 }
