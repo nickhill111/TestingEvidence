@@ -136,4 +136,9 @@ public class DialogUtils {
         JOptionPane.showMessageDialog(null, "Cant read from generated text file: " + generatedTextFile.getAbsolutePath(),
             "Can't read file", JOptionPane.ERROR_MESSAGE);
     }
+
+    public static void currentlySavingDialog() {
+        JOptionPane.showMessageDialog(null, "Currently saving, please wait till it is saved to save again",
+            "Currently saving", JOptionPane.ERROR_MESSAGE);
+    }
 }

@@ -16,15 +16,29 @@ import org.nickhill111.gui.PreviewPanel;
 import org.nickhill111.util.DialogUtils;
 public class SavingService {
     private final Settings settings = Settings.getInstance();
+    private boolean isSaving = false;
 
     public void saveAllScreenshots() {
-        new Thread(() -> {
-            if (settings.isActivefolder()) {
-                saveScreenshots();
-            } else {
-                saveAllScreenshotsWithFileChooser();
-            }
-        }).start();
+        if (!isSaving) {
+            isSaving = true;
+
+            new Thread(() -> {
+                try {
+                    if (settings.isActivefolder()) {
+                        saveScreenshots();
+                    } else {
+                        saveAllScreenshotsWithFileChooser();
+                    }
+                } catch (Exception e) {
+                    DialogUtils.cantSaveDialog(e);
+                }
+
+                isSaving = false;
+            }).start();
+
+        } else {
+            DialogUtils.currentlySavingDialog();
+        }
     }
 
     public void saveAllScreenshotsWithFileChooser() {

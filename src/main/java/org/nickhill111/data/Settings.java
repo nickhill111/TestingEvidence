@@ -5,6 +5,7 @@ import java.io.File;
 
 import lc.kra.system.keyboard.GlobalKeyboardHook;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.nickhill111.gui.MainPanel;
 import org.nickhill111.gui.ToolBar;
@@ -14,6 +15,7 @@ import static java.util.Objects.nonNull;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class Settings {
     private static Settings INSTANCE;
 
@@ -25,9 +27,6 @@ public class Settings {
 
     private File activeFolder;
     private GlobalKeyboardHook keyboardHook;
-
-    private Settings() {
-    }
 
     public static Settings getInstance() {
         if(INSTANCE == null) {
