@@ -149,8 +149,8 @@ public class AcTabbedPane extends JTabbedPane {
                 if (e.getModifiersEx() == MouseEvent.META_DOWN_MASK && e.getClickCount() == 1) {
                     int selectedIndex = getSelectedIndex();
 
+                    JPopupMenu menu = new JPopupMenu();
                     if (getTabCount() > 1 && selectedIndex == getTabCount() - 1 && getTitleAt(selectedIndex).startsWith("AC ")) {
-                        JPopupMenu menu = new JPopupMenu();
 
                         JMenuItem deleteMenuItem = new JMenuItem("Delete");
                         deleteMenuItem.addActionListener(e1 -> {
@@ -158,9 +158,18 @@ public class AcTabbedPane extends JTabbedPane {
                             GuiUtils.refreshComponent(settings.getFrame());
                         });
                         menu.add(deleteMenuItem);
-
-                        menu.show(e.getComponent(), e.getX(), e.getY());
                     }
+
+                    JMenuItem removeAllEvidence = new JMenuItem("Remove all evidence");
+                    removeAllEvidence.addActionListener(e1 -> {
+                        if (getComponentAt(selectedIndex) instanceof ScrollPane scrollPane) {
+                            scrollPane.getPreviewPanel().removeAll();
+                            GuiUtils.refreshComponent(scrollPane);
+                        }
+                    });
+                    menu.add(removeAllEvidence);
+
+                    menu.show(e.getComponent(), e.getX(), e.getY());
                 }
             }
 
