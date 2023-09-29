@@ -157,6 +157,8 @@ public class MenuBar extends JMenuBar {
                 save screen dimensions and position and if full screen
                 add pass/fail icons
                 finish this dialog and the help dialog (need to change this to html)
+                change icon
+                packup into a jar
                 """);
             aboutFrame.add(aboutDialog);
             aboutFrame.pack();
