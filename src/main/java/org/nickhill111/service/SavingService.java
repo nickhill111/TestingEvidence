@@ -1,13 +1,13 @@
 package org.nickhill111.service;
 
 import static java.util.Objects.nonNull;
+import static org.nickhill111.util.FileUtils.deleteEntireFolder;
 
 import javax.swing.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.io.FileUtils;
@@ -15,11 +15,14 @@ import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.nickhill111.TestingEvidenceApplication;
+import org.nickhill111.data.Config;
+import org.nickhill111.data.ConfigDetails;
 import org.nickhill111.data.FrameComponents;
 import org.nickhill111.gui.ProgressBar;
 import org.nickhill111.gui.ScenarioPanel;
 import org.nickhill111.util.DialogUtils;
 public class SavingService {
+    private final Config config = Config.getInstance();
     private final FrameComponents frameComponents = FrameComponents.getInstance();
     private boolean isSaving = false;
     private XWPFDocument document;
@@ -48,7 +51,8 @@ public class SavingService {
     }
 
     public void saveAllScreenshotsWithFileChooser() {
-        JFileChooser fileChooser = new JFileChooser();
+        ConfigDetails configDetails = config.getConfigDetails();
+        JFileChooser fileChooser = new JFileChooser(configDetails.getFileChooserLocation());
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         fileChooser.setDialogTitle("Save Screenshots");
 
@@ -57,6 +61,9 @@ public class SavingService {
         if (userSelection == JFileChooser.APPROVE_OPTION) {
             File folderToSave = fileChooser.getSelectedFile();
             saveScreenshots(folderToSave);
+
+            configDetails.setFileChooserLocation(folderToSave.getAbsolutePath());
+            config.saveConfig();
         }
     }
 
@@ -86,10 +93,12 @@ public class SavingService {
         }
 
         if (nonNull(existingFiles)) {
-            deletePreviousFiles(existingFiles);
+            deleteEntireFolder(existingFiles);
         }
 
         saveGeneratedTextToFile(folder);
+
+        config.getConfigDetails().setOpenedFolderPath(folder.getAbsolutePath());
     }
 
     private void generateTextAndScreenshots(File folder) {
@@ -144,16 +153,6 @@ public class SavingService {
         }
     }
 
-    private void deletePreviousFiles(File[] previousFiles) {
-        for (File file : previousFiles) {
-            boolean isFileDeleted = file.isFile() ? deleteDirectory(file) : file.delete();
-
-            if (!isFileDeleted) {
-                DialogUtils.cantDeleteActiveFolder();
-            }
-        }
-    }
-
     public File getFolderName(File folder) {
         return getFolderName(folder, 1);
     }
@@ -172,7 +171,8 @@ public class SavingService {
     }
 
     public void openScreenshots() {
-        JFileChooser fileChooser = new JFileChooser();
+        ConfigDetails configDetails = config.getConfigDetails();
+        JFileChooser fileChooser = new JFileChooser(configDetails.getFileChooserLocation());
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         fileChooser.setDialogTitle("Open Screenshots");
 
@@ -181,18 +181,12 @@ public class SavingService {
         if (userSelection == JFileChooser.APPROVE_OPTION) {
             File folderToOpen = fileChooser.getSelectedFile();
 
+            configDetails.setOpenedFolderPath(folderToOpen.getAbsolutePath());
+            configDetails.setFileChooserLocation(folderToOpen.getParentFile().getAbsolutePath());
+            config.saveConfig();
+
             frameComponents.getFrame().dispose();
             new TestingEvidenceApplication(folderToOpen);
         }
-    }
-
-    private boolean deleteDirectory(File directoryToBeDeleted) {
-        File[] allContents = directoryToBeDeleted.listFiles();
-
-        if (nonNull(allContents)) {
-            Arrays.stream(allContents).forEachOrdered(this::deleteDirectory);
-        }
-
-        return directoryToBeDeleted.delete();
     }
 }

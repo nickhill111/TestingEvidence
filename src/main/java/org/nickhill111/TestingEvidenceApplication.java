@@ -26,6 +26,13 @@ public class TestingEvidenceApplication {
     private final Config config = Config.getInstance();
 
     public TestingEvidenceApplication() {
+        String openedFolderPath = config.getConfigDetails().getOpenedFolderPath();
+
+        if (nonNull(openedFolderPath)) {
+            new TestingEvidenceApplication(new File(openedFolderPath));
+            return;
+        }
+
         new TestingEvidenceApplication(null);
     }
     public TestingEvidenceApplication(File folderToOpenFrom) {

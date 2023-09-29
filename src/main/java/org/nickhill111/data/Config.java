@@ -15,6 +15,8 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import static org.nickhill111.util.FileUtils.deleteEntireFolder;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
 @Builder(toBuilder = true)
@@ -65,11 +67,25 @@ public class Config {
         try {
             String json = ow.writeValueAsString(configDetails);
 
+            if (!CONFIG_FOLDER.exists() && !CONFIG_FOLDER.mkdirs()) {
+                DialogUtils.cantSaveConfig();
+            }
+
             BufferedWriter writer = new BufferedWriter(new FileWriter(CONFIG_FILE));
             writer.write(json);
             writer.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void reset() {
+        INSTANCE = new Config();
+
+        if (CONFIG_FOLDER.exists()) {
+            deleteEntireFolder(new File[]{CONFIG_FOLDER});
+        }
+
+        DialogUtils.configHasBeenReset();
     }
 }

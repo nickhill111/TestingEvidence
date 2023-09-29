@@ -1,6 +1,7 @@
 package org.nickhill111.gui;
 
 import org.imgscalr.Scalr;
+import org.nickhill111.data.Config;
 import org.nickhill111.data.FrameComponents;
 
 import javax.swing.*;
@@ -18,6 +19,7 @@ public class PreviewEvidenceToolBar extends JToolBar {
     private final JLabel picLabel;
     private final JComboBox<String> zoomComboBox;
     private BufferedImage image;
+    private final Config config = Config.getInstance();
     private final FrameComponents frameComponents = FrameComponents.getInstance();
 
     public PreviewEvidenceToolBar(PreviewEvidenceFrame previewEvidenceFrame, JLabel picLabel, BufferedImage image) {
@@ -32,7 +34,9 @@ public class PreviewEvidenceToolBar extends JToolBar {
         add(createRightButton());
         addSeparator();
         add(createZoomLabel());
+
         this.zoomComboBox = createZoomComboBox();
+        updateImageSizeAndFrameDimensions(image);
         add(zoomComboBox);
     }
 
@@ -80,7 +84,7 @@ public class PreviewEvidenceToolBar extends JToolBar {
         zoomSizesComboBox.addItem("5");
         zoomSizesComboBox.addItem(MAX);
 
-        zoomSizesComboBox.setSelectedItem("3 (Default)");
+        zoomSizesComboBox.setSelectedIndex(config.getConfigDetails().getSelectedZoomIndex());
 
         zoomSizesComboBox.addActionListener(e -> updateImageSizeAndFrameDimensions(image));
 
@@ -108,6 +112,9 @@ public class PreviewEvidenceToolBar extends JToolBar {
         } else {
             previewEvidenceFrame.pack();
         }
+
+        config.getConfigDetails().setSelectedZoomIndex(zoomComboBox.getSelectedIndex());
+        config.saveConfig();
         refreshComponent(previewEvidenceFrame);
     }
 }

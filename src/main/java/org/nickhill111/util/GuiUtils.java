@@ -5,6 +5,8 @@ import org.nickhill111.gui.Scenarios;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.HierarchyBoundsAdapter;
+import java.awt.event.HierarchyEvent;
 
 import static java.util.Objects.nonNull;
 
@@ -21,6 +23,13 @@ public class GuiUtils {
         if (new Dimension(0, 0).equals(gui.getSize())) {
             gui.setSize(GUI_SIZE);
         }
+
+        gui.getContentPane().addHierarchyBoundsListener(new HierarchyBoundsAdapter() {
+            @Override
+            public void ancestorMoved(HierarchyEvent e) {
+                refreshComponent(gui.getContentPane());
+            }
+        });
 
         gui.setLocationRelativeTo(null);
         gui.setResizable(true);

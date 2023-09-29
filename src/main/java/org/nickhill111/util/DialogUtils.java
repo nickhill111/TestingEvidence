@@ -147,11 +147,24 @@ public class DialogUtils {
             "Cant create config", JOptionPane.ERROR_MESSAGE);
     }
 
+    public static void cantSaveConfig() {
+        JOptionPane.showMessageDialog(null, "Unable to save the config!\n\nPlease go to preferences -> reset config to amend",
+            "Cant save config", JOptionPane.ERROR_MESSAGE);
+    }
+
     public static void lookAndFeelChangedSuccessfully() {
         JOptionPane.showMessageDialog(null, """
                 Look and feel changed successfully!
 
                 Please reopen the application to see changes""",
             "Look and Feel change", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    public static void configHasBeenReset() {
+        JOptionPane.showMessageDialog(null, """
+                Config has been reset!
+
+                Please reopen the application to see all""",
+            "Config reset", JOptionPane.INFORMATION_MESSAGE);
     }
 }

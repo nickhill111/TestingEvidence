@@ -5,8 +5,6 @@ import org.nickhill111.util.GuiUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.awt.image.BufferedImage;
 
 import static org.nickhill111.util.GuiUtils.PHOTO_SIZE;

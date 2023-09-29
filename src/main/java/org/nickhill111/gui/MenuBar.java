@@ -12,6 +12,7 @@ import org.nickhill111.data.FrameComponents;
 import org.nickhill111.service.SavingService;
 import org.nickhill111.service.ScreenshotService;
 import org.nickhill111.util.DialogUtils;
+import org.nickhill111.util.GuiUtils;
 
 import static org.nickhill111.util.GuiUtils.addNewScenarioTab;
 
@@ -25,6 +26,7 @@ public class MenuBar extends JMenuBar {
         add(createFileMenu());
         add(createFunctionsMenu());
         add(createPersonalisationMenu());
+        add(createHelpMenu());
     }
 
     private JMenu createFileMenu() {
@@ -132,6 +134,51 @@ public class MenuBar extends JMenuBar {
         }
         personalisationMenu.add(lookAndFeelMenu);
 
+        JMenuItem resetConfig = new JMenuItem("Reset Config");
+        resetConfig.addActionListener(e -> {
+            config.reset();
+        });
+        personalisationMenu.add(resetConfig);
+
         return personalisationMenu;
+    }
+
+    private JMenu createHelpMenu() {
+        JMenu helpMenu = new JMenu("Help");
+
+        JMenuItem aboutMenuItem = new JMenuItem("About");
+        aboutMenuItem.addActionListener(e -> {
+            JFrame aboutFrame = new JFrame();
+            JLabel aboutTitle = new JLabel("About");
+            aboutFrame.add(aboutTitle);
+
+            JLabel aboutDialog = new JLabel("""
+                Using this as a todo section for the moment:
+                
+                Allow the user to choose regression events (solution for if a user wants to use different configs for different tests?)
+                save screen dimensions and position and if full screen
+                add pass/fail icons
+                finish this dialog and the help dialog (need to change this to html)
+                """);
+            aboutFrame.add(aboutDialog);
+            aboutFrame.pack();
+            GuiUtils.setupGui(aboutFrame);
+        });
+        helpMenu.add(aboutMenuItem);
+
+        JMenuItem helpMenuItem = new JMenuItem("Help");
+        helpMenuItem.addActionListener(e -> {
+            JFrame helpFrame = new JFrame();
+            JLabel helpTitle = new JLabel("Help");
+            helpFrame.add(helpTitle);
+
+            JLabel helpDialog = new JLabel("Not completed yet");
+            helpFrame.add(helpDialog);
+            helpFrame.pack();
+            GuiUtils.setupGui(helpFrame);
+        });
+        helpMenu.add(helpMenuItem);
+
+        return helpMenu;
     }
 }
