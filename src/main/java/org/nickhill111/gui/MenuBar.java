@@ -135,9 +135,7 @@ public class MenuBar extends JMenuBar {
         personalisationMenu.add(lookAndFeelMenu);
 
         JMenuItem resetConfig = new JMenuItem("Reset Config");
-        resetConfig.addActionListener(e -> {
-            config.reset();
-        });
+        resetConfig.addActionListener(e -> config.reset());
         personalisationMenu.add(resetConfig);
 
         return personalisationMenu;
