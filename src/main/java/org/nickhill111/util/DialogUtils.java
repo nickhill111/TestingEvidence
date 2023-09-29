@@ -141,4 +141,17 @@ public class DialogUtils {
         JOptionPane.showMessageDialog(null, "Currently saving, please wait till it is saved to save again",
             "Currently saving", JOptionPane.ERROR_MESSAGE);
     }
+
+    public static void cantCreateConfig() {
+        JOptionPane.showMessageDialog(null, "Unable to create the config!",
+            "Cant create config", JOptionPane.ERROR_MESSAGE);
+    }
+
+    public static void lookAndFeelChangedSuccessfully() {
+        JOptionPane.showMessageDialog(null, """
+                Look and feel changed successfully!
+
+                Please reopen the application to see changes""",
+            "Look and Feel change", JOptionPane.INFORMATION_MESSAGE);
+    }
 }

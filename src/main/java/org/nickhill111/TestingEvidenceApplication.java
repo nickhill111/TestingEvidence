@@ -3,6 +3,7 @@ package org.nickhill111;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
+import static org.apache.logging.log4j.util.Strings.isEmpty;
 import static org.nickhill111.util.DialogUtils.checkValidFileName;
 
 import javax.swing.*;
@@ -11,7 +12,9 @@ import java.io.File;
 import lc.kra.system.keyboard.GlobalKeyboardHook;
 import lc.kra.system.keyboard.event.GlobalKeyAdapter;
 import lc.kra.system.keyboard.event.GlobalKeyEvent;
+import org.nickhill111.data.Config;
 import org.nickhill111.data.FrameComponents;
+import org.nickhill111.data.Personalisation;
 import org.nickhill111.gui.MainPanel;
 import org.nickhill111.gui.MenuBar;
 import org.nickhill111.service.ScreenshotService;
@@ -20,6 +23,7 @@ import org.nickhill111.util.GuiUtils;
 
 public class TestingEvidenceApplication {
     private final FrameComponents frameComponents = FrameComponents.getInstance();
+    private final Config config = Config.getInstance();
 
     public TestingEvidenceApplication() {
         new TestingEvidenceApplication(null);
@@ -49,11 +53,18 @@ public class TestingEvidenceApplication {
         setupKeyboardHook();
         GuiUtils.setupGui(gui);
         gui.setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+        config.saveConfig();
     }
 
     private void setLookAndFeel() {
         try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            Personalisation personalisation = config.getConfigDetails().getPersonalisation();
+            if (isEmpty(personalisation.getLookAndFeel())) {
+                personalisation.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            }
+
+            UIManager.setLookAndFeel(personalisation.getLookAndFeel());
         } catch (Exception e) {
             e.printStackTrace();
         }
