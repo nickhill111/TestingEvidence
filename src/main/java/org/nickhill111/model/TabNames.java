@@ -7,6 +7,6 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum TabNames {
     REGRESSION("Regression"),
-    AC("AC");
+    SCENARIO("Scenario");
     private final String value;
 }

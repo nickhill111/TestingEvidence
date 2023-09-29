@@ -4,19 +4,25 @@ import static java.util.Objects.nonNull;
 
 import javax.swing.*;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.io.FileUtils;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.nickhill111.TestingEvidenceApplication;
-import org.nickhill111.data.Settings;
-import org.nickhill111.gui.PreviewPanel;
+import org.nickhill111.data.FrameComponents;
+import org.nickhill111.gui.ProgressBar;
+import org.nickhill111.gui.ScenarioPanel;
 import org.nickhill111.util.DialogUtils;
 public class SavingService {
-    private final Settings settings = Settings.getInstance();
+    private final FrameComponents frameComponents = FrameComponents.getInstance();
     private boolean isSaving = false;
+    private XWPFDocument document;
 
     public void saveAllScreenshots() {
         if (!isSaving) {
@@ -24,7 +30,7 @@ public class SavingService {
 
             new Thread(() -> {
                 try {
-                    if (settings.isActivefolder()) {
+                    if (frameComponents.isActiveFolder()) {
                         saveScreenshots();
                     } else {
                         saveAllScreenshotsWithFileChooser();
@@ -55,20 +61,20 @@ public class SavingService {
     }
 
     private void saveScreenshots() {
-        saveScreenshots(settings.getActiveFolder());
+        saveScreenshots(frameComponents.getActiveFolder());
     }
 
     private void saveScreenshots(File folder) {
-        if (!folder.equals(settings.getActiveFolder())) {
+        if (!folder.equals(frameComponents.getActiveFolder())) {
             folder = getFolderName(folder);
         }
 
         File[] existingFiles = folder.listFiles();
 
-        settings.getFrame().setTitle(folder.getName());
+        frameComponents.getFrame().setTitle(folder.getName());
 
         if (folder.exists() || folder.mkdirs()) {
-            settings.setActiveFolder(folder);
+            frameComponents.setActiveFolder(folder);
 
             generateTextAndScreenshots(folder);
 
@@ -87,32 +93,52 @@ public class SavingService {
     }
 
     private void generateTextAndScreenshots(File folder) {
+        document = new XWPFDocument();
         StringBuilder generatedText = new StringBuilder();
 
-        Map<String, List<PreviewPanel>> allPreviewPanels = settings.getUserTabbedPane().getAllPreviewPanels();
+        Map<String, List<ScenarioPanel>> allPreviewPanels = frameComponents.getUsers().getAllScenarioPanels();
+
+        ProgressBar progressBar = new ProgressBar(allPreviewPanels.keySet().size());
+
         for (String userType : allPreviewPanels.keySet()) {
-            generatedText.append(userType).append(" testing:\n\n");
-            List<PreviewPanel> previewPanels = allPreviewPanels.get(userType);
+            String textTitle = userType + " testing:";
 
-            for (PreviewPanel previewPanel : previewPanels) {
-                String generatedTextForAc = previewPanel.saveAllEvidence(userType, folder);
+            XWPFParagraph paragraph = document.createParagraph();
+            XWPFRun userRun = paragraph.createRun();
+            userRun.setText(textTitle);
+            userRun.addBreak();
+            userRun.addBreak();
 
-                if (nonNull(generatedTextForAc)) {
-                    generatedText.append(generatedTextForAc).append("\n\n");
+            generatedText.append(textTitle).append("\n\n");
+            List<ScenarioPanel> scenarioPanels = allPreviewPanels.get(userType);
+
+            for (ScenarioPanel scenarioPanel : scenarioPanels) {
+                XWPFRun scenarioRun = paragraph.createRun();
+                String generatedTextForScenario = scenarioPanel.saveAllEvidence(userType, folder, scenarioRun);
+
+                if (nonNull(generatedTextForScenario)) {
+                    generatedText.append(generatedTextForScenario).append("\n\n");
                 } else {
-                    settings.getGeneratedTextArea().setText("Error when saving!");
+                    frameComponents.getGeneratedTextArea().setText("Error when saving!");
                     return;
                 }
             }
+
+            progressBar.incrementValue();
         }
 
-        settings.getGeneratedTextArea().setText(generatedText.toString());
+        progressBar.dispose();
+
+        frameComponents.getGeneratedTextArea().setText(generatedText.toString());
     }
 
     private void saveGeneratedTextToFile(File folder) {
-        String text = settings.getGeneratedTextArea().getText();
+        String text = frameComponents.getGeneratedTextArea().getText();
         try {
             FileUtils.writeStringToFile(new File(folder, "GeneratedText.txt"), text, StandardCharsets.UTF_8);
+            FileOutputStream out = new FileOutputStream( new File(folder, frameComponents.getFrame().getTitle() + "-Evidence.docx"));
+            document.write(out);
+            out.close();
         } catch (IOException e) {
             DialogUtils.cantSaveGeneratedText(e);
         }
@@ -133,7 +159,7 @@ public class SavingService {
     }
 
     public File getFolderName(File folder, int number) {
-        folder = new File(folder, settings.getFrame().getTitle());
+        folder = new File(folder, frameComponents.getFrame().getTitle());
 
         File temporaryFolder = new File(folder.getAbsolutePath());
 
@@ -155,7 +181,7 @@ public class SavingService {
         if (userSelection == JFileChooser.APPROVE_OPTION) {
             File folderToOpen = fileChooser.getSelectedFile();
 
-            settings.getFrame().dispose();
+            frameComponents.getFrame().dispose();
             new TestingEvidenceApplication(folderToOpen);
         }
     }

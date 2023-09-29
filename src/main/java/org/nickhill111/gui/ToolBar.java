@@ -2,12 +2,14 @@ package org.nickhill111.gui;
 
 import javax.swing.*;
 import java.awt.*;
-import org.nickhill111.data.Settings;
+import org.nickhill111.data.FrameComponents;
 import org.nickhill111.service.SavingService;
 import org.nickhill111.service.ScreenshotService;
 
+import static org.nickhill111.util.GuiUtils.addNewScenarioTab;
+
 public class ToolBar extends JToolBar {
-    private final Settings settings = Settings.getInstance();
+    private final FrameComponents frameComponents = FrameComponents.getInstance();
     private final SavingService savingService = new SavingService();
     private JComboBox<GraphicsDevice> screenSelection;
 
@@ -17,17 +19,15 @@ public class ToolBar extends JToolBar {
         add(createScreenSelection());
         add(createScreenshotButton());
         add(createUserButton());
-        add(createAddAcButton());
+        add(createAddScenarioButton());
         add(createSaveButton());
 
-        settings.setToolBar(this);
+        frameComponents.setToolBar(this);
     }
 
     private JButton createScreenshotButton() {
         JButton screenshotButton = new JButton("Take Screenshot");
-        screenshotButton.addActionListener(e -> {
-            screenshotService.takeAndAddScreenshot();
-        });
+        screenshotButton.addActionListener(e -> screenshotService.takeAndAddScreenshot());
 
         return screenshotButton;
     }
@@ -44,29 +44,22 @@ public class ToolBar extends JToolBar {
     }
 
     private JButton createUserButton() {
-        JButton addAcButton = new JButton("Add User");
-        addAcButton.addActionListener(e -> {
-            settings.getUserTabbedPane().addEmptyTab();
-        });
+        JButton addUserButton = new JButton("Add User");
+        addUserButton.addActionListener(e -> frameComponents.getUsers().addEmptyTab());
 
-        return addAcButton;
+        return addUserButton;
     }
 
-    private JButton createAddAcButton() {
-        JButton addAcButton = new JButton("Add AC");
-        addAcButton.addActionListener(e -> {
-            AcTabbedPane acTabbedPane = settings.getUserTabbedPane().getSelectedAcTabbedPane();
-            acTabbedPane.addEmptyTab();
-        });
+    private JButton createAddScenarioButton() {
+        JButton addScenarioButton = new JButton("Add Scenario");
+        addScenarioButton.addActionListener(e -> addNewScenarioTab());
 
-        return addAcButton;
+        return addScenarioButton;
     }
 
     private JButton createSaveButton() {
         JButton saveButton = new JButton("Save");
-        saveButton.addActionListener(e -> {
-            savingService.saveAllScreenshots();
-        });
+        saveButton.addActionListener(e -> savingService.saveAllScreenshots());
 
         return saveButton;
     }

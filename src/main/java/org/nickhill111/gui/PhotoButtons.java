@@ -2,20 +2,30 @@ package org.nickhill111.gui;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Arrays;
+import java.awt.image.BufferedImage;
 
-import org.nickhill111.util.GuiUtils;
+public class PhotoButtons extends JPanel {
+    private final BufferedImage image;
 
-public class PhotoButtonPanel extends JPanel {
-
-    PhotoButtonPanel() {
+    public PhotoButtons(BufferedImage image) {
+        this.image = image;
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 
         add(createMoveLeftButton());
         add(Box.createRigidArea(new Dimension(5, 0)));
         add(createRemoveButton());
         add(Box.createRigidArea(new Dimension(5, 0)));
+        add(createPreviewButton());
+        add(Box.createRigidArea(new Dimension(5, 0)));
         add(createMoveRightButton());
+    }
+
+    private JButton createPreviewButton() {
+        JButton previewButton = new JButton("Preview");
+
+        previewButton.addActionListener(e -> new PreviewEvidenceFrame(image));
+
+        return previewButton;
     }
 
     private JButton createMoveLeftButton() {
@@ -46,8 +56,8 @@ public class PhotoButtonPanel extends JPanel {
                 return;
             }
 
-            if (previewPanelComp instanceof PreviewPanel previewPanel) {
-                previewPanel.switchEvidence(indexToSwap, index);
+            if (previewPanelComp instanceof ScenarioPanel scenarioPanel) {
+                scenarioPanel.switchEvidence(indexToSwap, index);
             }
         });
     }
@@ -56,26 +66,11 @@ public class PhotoButtonPanel extends JPanel {
         JButton removeButton = new JButton("Remove");
 
         removeButton.addActionListener(e -> {
-            Container previewPanelComp = getParent().getParent();
-            Container parentComp = getParent();
+            Container photoContainer = getParent();
 
-            GridBagLayout gridBagLayout = (GridBagLayout) previewPanelComp.getLayout();
-
-            int indexOfRemovedComp = gridBagLayout.getConstraints(parentComp).gridx;
-
-            previewPanelComp.remove(parentComp);
-
-            Arrays.stream(previewPanelComp.getComponents())
-                .filter(component -> gridBagLayout.getConstraints(component).gridx > indexOfRemovedComp)
-                .forEach(component -> {
-                    GridBagConstraints constraints = gridBagLayout.getConstraints(component);
-                    constraints.gridx--;
-
-                    previewPanelComp.remove(component);
-                    previewPanelComp.add(component, constraints);
-                });
-
-            GuiUtils.refreshComponent(previewPanelComp);
+            if (photoContainer instanceof Photo photo) {
+                photo.removePhoto();
+            }
         });
 
         removeButton.setAlignmentX(Component.CENTER_ALIGNMENT);

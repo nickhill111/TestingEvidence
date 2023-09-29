@@ -7,13 +7,15 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import org.nickhill111.TestingEvidenceApplication;
-import org.nickhill111.data.Settings;
+import org.nickhill111.data.FrameComponents;
 import org.nickhill111.service.SavingService;
 import org.nickhill111.service.ScreenshotService;
 import org.nickhill111.util.DialogUtils;
 
+import static org.nickhill111.util.GuiUtils.addNewScenarioTab;
+
 public class MenuBar extends JMenuBar {
-    private final Settings settings = Settings.getInstance();
+    private final FrameComponents frameComponents = FrameComponents.getInstance();
     private final SavingService savingService = new SavingService();
     private final ScreenshotService screenshotService = new ScreenshotService();
 
@@ -27,7 +29,7 @@ public class MenuBar extends JMenuBar {
 
         JMenuItem newMenuItem = new JMenuItem("New");
         newMenuItem.addActionListener(e -> {
-            settings.getFrame().dispose();
+            frameComponents.getFrame().dispose();
             new TestingEvidenceApplication();
         });
         newMenuItem.setMnemonic(KeyEvent.VK_N);
@@ -83,25 +85,22 @@ public class MenuBar extends JMenuBar {
 
         JMenuItem addUserMenuItem = new JMenuItem("Add User");
         addUserMenuItem.addActionListener(e -> {
-            settings.getUserTabbedPane().addEmptyTab();
+            frameComponents.getUsers().addEmptyTab();
         });
         addUserMenuItem.setMnemonic(KeyEvent.VK_U);
         addUserMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U, InputEvent.CTRL_DOWN_MASK));
         functionsMenu.add(addUserMenuItem);
 
-        JMenuItem addAcMenuItem = new JMenuItem("Add AC");
-        addAcMenuItem.addActionListener(e -> {
-            AcTabbedPane acTabbedPane = settings.getUserTabbedPane().getSelectedAcTabbedPane();
-            acTabbedPane.addEmptyTab();
-        });
-        addAcMenuItem.setMnemonic(KeyEvent.VK_A);
-        addAcMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_DOWN_MASK));
-        functionsMenu.add(addAcMenuItem);
+        JMenuItem addScenarioMenuItem = new JMenuItem("Add Scenario");
+        addScenarioMenuItem.addActionListener(e -> addNewScenarioTab());
+        addScenarioMenuItem.setMnemonic(KeyEvent.VK_A);
+        addScenarioMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_DOWN_MASK));
+        functionsMenu.add(addScenarioMenuItem);
 
         JMenuItem addRegressionMenuItem = new JMenuItem("Add Regression Testing");
         addRegressionMenuItem.addActionListener(e -> {
-            UserTabbedPane userTabbedPane = settings.getUserTabbedPane();
-            userTabbedPane.addEmptyRegressionTab();
+            Users users = frameComponents.getUsers();
+            users.addEmptyRegressionTab();
         });
         addRegressionMenuItem.setMnemonic(KeyEvent.VK_R);
         addRegressionMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_DOWN_MASK));
@@ -117,7 +116,7 @@ public class MenuBar extends JMenuBar {
 
         JMenuItem copyGeneratedTextMenuItem = new JMenuItem("Copy Generated Text");
         copyGeneratedTextMenuItem.addActionListener(e -> {
-            StringSelection selection = new StringSelection(settings.getGeneratedTextArea().getText());
+            StringSelection selection = new StringSelection(frameComponents.getGeneratedTextArea().getText());
             Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
             clipboard.setContents(selection, selection);
         });

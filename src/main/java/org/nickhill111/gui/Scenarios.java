@@ -2,6 +2,7 @@ package org.nickhill111.gui;
 
 import static java.util.Objects.isNull;
 import static org.nickhill111.model.TabNames.REGRESSION;
+import static org.nickhill111.model.TabNames.SCENARIO;
 
 import javax.swing.*;
 import java.awt.event.MouseEvent;
@@ -9,29 +10,29 @@ import java.awt.event.MouseListener;
 import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
-import org.nickhill111.data.Settings;
+import org.nickhill111.data.FrameComponents;
 import org.nickhill111.model.RegressionTab;
 import org.nickhill111.util.DialogUtils;
 import org.nickhill111.util.GuiUtils;
 
-public class AcTabbedPane extends JTabbedPane {
-    private final Settings settings = Settings.getInstance();
+public class Scenarios extends JTabbedPane {
+    private final FrameComponents frameComponents = FrameComponents.getInstance();
 
-    public AcTabbedPane(List<File> files) {
-        addAcTab(files);
+    public Scenarios(List<File> files) {
+        addScenarioTab(files);
         addMouseListener();
     }
 
-    public AcTabbedPane(List<File> files, boolean isRegression) {
+    public Scenarios(List<File> files, boolean isRegression) {
         if (isRegression) {
             addRegressionTabs(files);
         } else {
-            addAcTab(files);
+            addScenarioTab(files);
         }
         addMouseListener();
     }
 
-    private void addAcTab(List<File> files) {
+    private void addScenarioTab(List<File> files) {
         if (isNull(files) || files.isEmpty()) {
             addNewEmptyTab();
         } else {
@@ -49,21 +50,21 @@ public class AcTabbedPane extends JTabbedPane {
         for (int i = 1; i <= lastFileNumber; i++) {
             int finalI = i;
             List<File> filesForTab = files.stream()
-                .filter(file -> file.getName().startsWith(userType + "_AC_" + finalI + "_"))
+                .filter(file -> file.getName().startsWith(userType + "_" + SCENARIO.getValue() + "_" + finalI + "_"))
                 .toList();
-            PreviewPanel previewPanel = new PreviewPanel(i, filesForTab);
+            ScenarioPanel scenarioPanel = new ScenarioPanel(i, filesForTab);
 
-            ScrollPane scrollPane = new ScrollPane(previewPanel);
+            ScrollPane scrollPane = new ScrollPane(scenarioPanel);
 
-            addTab("AC " + i, scrollPane);
+            addTab(SCENARIO.getValue() + "_" + i, scrollPane);
 
             selectNewComponent(scrollPane);
         }
     }
 
     public void addEmptyTab() {
-        UserTabbedPane userTabbedPane = settings.getUserTabbedPane();
-        if (userTabbedPane.getTitleAt(userTabbedPane.getSelectedIndex()).equals(REGRESSION.getValue())) {
+        Users users = frameComponents.getUsers();
+        if (users.getTitleAt(users.getSelectedIndex()).equals(REGRESSION.getValue())) {
             DialogUtils.cantAddTabUnderRegression();
         } else {
             addNewEmptyTab();
@@ -71,13 +72,13 @@ public class AcTabbedPane extends JTabbedPane {
     }
 
     private void addNewEmptyTab() {
-        int acValue = getTabCount() + 1;
+        int scenarioNumber = getTabCount() + 1;
 
-        PreviewPanel previewPanel = new PreviewPanel(acValue);
+        ScenarioPanel scenarioPanel = new ScenarioPanel(scenarioNumber);
 
-        ScrollPane scrollPane = new ScrollPane(previewPanel);
+        ScrollPane scrollPane = new ScrollPane(scenarioPanel);
 
-        addTab("AC " + (acValue), scrollPane);
+        addTab(SCENARIO.getValue() + "_" + scenarioNumber, scrollPane);
 
         selectNewComponent(scrollPane);
     }
@@ -92,9 +93,9 @@ public class AcTabbedPane extends JTabbedPane {
 
     private void addEmptyRegressionTabs() {
         for (RegressionTab regressionTab : RegressionTab.values()) {
-            PreviewPanel previewPanel = new PreviewPanel(regressionTab.getId());
+            ScenarioPanel scenarioPanel = new ScenarioPanel(regressionTab.getId());
 
-            ScrollPane scrollPane = new ScrollPane(previewPanel);
+            ScrollPane scrollPane = new ScrollPane(scenarioPanel);
 
             addTab(regressionTab.getValue(), scrollPane);
         }
@@ -106,9 +107,9 @@ public class AcTabbedPane extends JTabbedPane {
                 .filter(file -> file.getName().contains(regressionTab.getValue() + "_"))
                 .toList();
 
-            PreviewPanel previewPanel = new PreviewPanel(regressionTab.getId(), filesForTab);
+            ScenarioPanel scenarioPanel = new ScenarioPanel(regressionTab.getId(), filesForTab);
 
-            ScrollPane scrollPane = new ScrollPane(previewPanel);
+            ScrollPane scrollPane = new ScrollPane(scenarioPanel);
 
             addTab(regressionTab.getValue(), scrollPane);
 
@@ -116,15 +117,15 @@ public class AcTabbedPane extends JTabbedPane {
         }
     }
 
-    public List<PreviewPanel> getPreviewPanels() {
-        List<PreviewPanel> previewPanels = new LinkedList<>();
+    public List<ScenarioPanel> getScenarioPanels() {
+        List<ScenarioPanel> scenarioPanels = new LinkedList<>();
 
         for (int i = 0; i < getTabCount(); i++) {
-            PreviewPanel previewPanel = ((ScrollPane) getComponentAt(i)).getPreviewPanel();
-            previewPanels.add(previewPanel);
+            ScenarioPanel scenarioPanel = ((ScrollPane) getComponentAt(i)).getScenarioPanel();
+            scenarioPanels.add(scenarioPanel);
         }
 
-        return previewPanels;
+        return scenarioPanels;
     }
 
     private void selectNewComponent(ScrollPane scrollPane) {
@@ -150,12 +151,12 @@ public class AcTabbedPane extends JTabbedPane {
                     int selectedIndex = getSelectedIndex();
 
                     JPopupMenu menu = new JPopupMenu();
-                    if (getTabCount() > 1 && selectedIndex == getTabCount() - 1 && getTitleAt(selectedIndex).startsWith("AC ")) {
+                    if (getTabCount() > 1 && selectedIndex == getTabCount() - 1 && getTitleAt(selectedIndex).startsWith(SCENARIO.getValue() + " ")) {
 
                         JMenuItem deleteMenuItem = new JMenuItem("Delete");
                         deleteMenuItem.addActionListener(e1 -> {
                             removeTabAt(selectedIndex);
-                            GuiUtils.refreshComponent(settings.getFrame());
+                            GuiUtils.refreshComponent(frameComponents.getFrame());
                         });
                         menu.add(deleteMenuItem);
                     }
@@ -163,7 +164,7 @@ public class AcTabbedPane extends JTabbedPane {
                     JMenuItem removeAllEvidence = new JMenuItem("Remove all evidence");
                     removeAllEvidence.addActionListener(e1 -> {
                         if (getComponentAt(selectedIndex) instanceof ScrollPane scrollPane) {
-                            scrollPane.getPreviewPanel().removeAll();
+                            scrollPane.getScenarioPanel().removeAll();
                             GuiUtils.refreshComponent(scrollPane);
                         }
                     });
@@ -183,5 +184,13 @@ public class AcTabbedPane extends JTabbedPane {
 
             }
         });
+    }
+
+    public ScenarioPanel getSelectedScenario() {
+        if (getSelectedComponent() instanceof ScrollPane scrollPane) {
+            return scrollPane.getScenarioPanel();
+        }
+
+        return null;
     }
 }

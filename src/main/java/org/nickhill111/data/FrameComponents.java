@@ -9,34 +9,34 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.nickhill111.gui.MainPanel;
 import org.nickhill111.gui.ToolBar;
-import org.nickhill111.gui.UserTabbedPane;
+import org.nickhill111.gui.Users;
 
 import static java.util.Objects.nonNull;
 
 @Getter
 @Setter
 @NoArgsConstructor
-public class Settings {
-    private static Settings INSTANCE;
+public class FrameComponents {
+    private static FrameComponents INSTANCE;
 
     private Frame frame;
     private MainPanel mainPanel;
     private ToolBar toolBar;
-    private UserTabbedPane userTabbedPane;
+    private Users users;
     private TextArea generatedTextArea;
 
     private File activeFolder;
     private GlobalKeyboardHook keyboardHook;
 
-    public static Settings getInstance() {
+    public static FrameComponents getInstance() {
         if(INSTANCE == null) {
-            INSTANCE = new Settings();
+            INSTANCE = new FrameComponents();
         }
 
         return INSTANCE;
     }
 
-    public boolean isActivefolder() {
+    public boolean isActiveFolder() {
         return nonNull(activeFolder) && activeFolder.exists() && activeFolder.isDirectory();
     }
 }

@@ -1,19 +1,18 @@
 package org.nickhill111.gui;
 
+import lombok.Getter;
+
 import javax.swing.*;
 
+@Getter
 public class ScrollPane extends JScrollPane {
-    PreviewPanel previewPanel;
+    private final ScenarioPanel scenarioPanel;
 
-    public ScrollPane(PreviewPanel previewPanel) {
-        super(previewPanel);
-        this.previewPanel = previewPanel;
+    public ScrollPane(ScenarioPanel scenarioPanel) {
+        super(scenarioPanel);
+        this.scenarioPanel = scenarioPanel;
 
         setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-    }
-
-    public PreviewPanel getPreviewPanel() {
-        return previewPanel;
     }
 }

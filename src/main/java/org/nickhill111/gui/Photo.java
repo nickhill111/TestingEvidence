@@ -5,17 +5,20 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import lombok.Getter;
-import org.nickhill111.data.Settings;
+import org.nickhill111.data.FrameComponents;
 import org.nickhill111.util.GuiUtils;
 import org.imgscalr.Scalr;
 
+import static org.nickhill111.util.GuiUtils.PHOTO_SIZE;
+
 @Getter
 public class Photo extends JPanel {
-    private final Settings settings = Settings.getInstance();
+    private final FrameComponents frameComponents = FrameComponents.getInstance();
     private final BufferedImage originalImage;
 
     public Photo(BufferedImage image) {
@@ -23,14 +26,14 @@ public class Photo extends JPanel {
 
         add(createPicture(image));
         add(Box.createRigidArea(new Dimension(0, 10)));
-        add(new PhotoButtonPanel());
+        add(new PhotoButtons(image));
         addMouseListener();
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
     }
 
     private JLabel createPicture(BufferedImage image) {
-        image = Scalr.resize(image, 300);
+        image = Scalr.resize(image, PHOTO_SIZE);
         JLabel picLabel = new JLabel(new ImageIcon(image));
         picLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -55,22 +58,22 @@ public class Photo extends JPanel {
                     JMenu moveToMenu = new JMenu("Move to");
                     menu.add(moveToMenu);
 
-                    Map<String, List<PreviewPanel>> allPreviewPanels = settings.getUserTabbedPane().getAllPreviewPanels();
+                    Map<String, List<ScenarioPanel>> allPreviewPanels = frameComponents.getUsers().getAllScenarioPanels();
 
                     for (String user : allPreviewPanels.keySet()) {
                         JMenu userMenu = new JMenu(user);
 
-                        for (PreviewPanel previewPanel : allPreviewPanels.get(user)) {
-                            JMenuItem ac = new JMenuItem(previewPanel.getTabValue());
-                            ac.addActionListener(e1 -> {
+                        for (ScenarioPanel scenarioPanel : allPreviewPanels.get(user)) {
+                            JMenuItem scenario = new JMenuItem(scenarioPanel.getTabValue());
+                            scenario.addActionListener(e1 -> {
                                 if (e.getSource() instanceof Photo photo) {
-                                    photo.getParent().remove(photo);
-                                    previewPanel.addEvidence(photo.getOriginalImage());
+                                    removePhoto();
+                                    scenarioPanel.addEvidence(photo.getOriginalImage());
 
-                                    GuiUtils.refreshComponent(settings.getFrame());
+                                    GuiUtils.refreshComponent(frameComponents.getFrame());
                                 }
                             });
-                            userMenu.add(ac);
+                            userMenu.add(scenario);
                         }
                         moveToMenu.add(userMenu);
                     }
@@ -88,5 +91,27 @@ public class Photo extends JPanel {
             public void mouseExited(MouseEvent e) {
             }
         });
+    }
+
+    public void removePhoto() {
+        Container previewPanelComp = getParent();
+
+        GridBagLayout gridBagLayout = (GridBagLayout) previewPanelComp.getLayout();
+
+        int indexOfRemovedComp = gridBagLayout.getConstraints(this).gridx;
+
+        previewPanelComp.remove(this);
+
+        Arrays.stream(previewPanelComp.getComponents())
+            .filter(component -> gridBagLayout.getConstraints(component).gridx > indexOfRemovedComp)
+            .forEach(component -> {
+                GridBagConstraints constraints = gridBagLayout.getConstraints(component);
+                constraints.gridx--;
+
+                previewPanelComp.remove(component);
+                previewPanelComp.add(component, constraints);
+            });
+
+        GuiUtils.refreshComponent(previewPanelComp);
     }
 }

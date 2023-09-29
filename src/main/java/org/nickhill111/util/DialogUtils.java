@@ -1,17 +1,17 @@
 package org.nickhill111.util;
 
-import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static org.apache.poi.common.usermodel.PictureType.PNG;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import org.nickhill111.data.Settings;
-import org.nickhill111.gui.UserTabbedPane;
+import org.nickhill111.data.FrameComponents;
+import org.nickhill111.gui.Users;
 
 public class DialogUtils {
-    static Settings settings = Settings.getInstance();
+    static FrameComponents frameComponents = FrameComponents.getInstance();
 
     public static void cantSaveDialog(Exception e) {
         JOptionPane.showMessageDialog(null, "Cannot save screenshots!\n\n" + e.getMessage(),
@@ -40,7 +40,7 @@ public class DialogUtils {
     }
 
     public static String askForTicketNumber() {
-        if (settings.isActivefolder()) {
+        if (frameComponents.isActiveFolder()) {
             JOptionPane.showMessageDialog(null, "Cannot change ticket number after saving!",
                 "Unable to change ticket number", JOptionPane.ERROR_MESSAGE);
             return null;
@@ -51,7 +51,7 @@ public class DialogUtils {
         ticketNumber = checkValidFileName(ticketNumber);
 
         if (nonNull(ticketNumber)) {
-            settings.getFrame().setTitle(ticketNumber);
+            frameComponents.getFrame().setTitle(ticketNumber);
         }
 
         return ticketNumber;
@@ -60,34 +60,34 @@ public class DialogUtils {
     public static String askForUserType() {
         String userType = JOptionPane.showInputDialog("Enter user type please");
 
-        if (isNull(checkValidFileName(userType))) {
-            return null;
-        }
+        userType = checkValidFileName(userType);
         
         return validateUserType(userType);
     }
 
     private static String validateUserType(String userType) {
-        UserTabbedPane userTabbedPane = settings.getUserTabbedPane();
+        if (nonNull(userType)) {
+            Users users = frameComponents.getUsers();
 
-        if (userTabbedPane.doesUserExist(userType)) {
-            JOptionPane.showMessageDialog(null, "User type " + userType + " already exists!",
-                "User type already exists", JOptionPane.ERROR_MESSAGE);
-            return askForUserType();
+            if (users.doesUserExist(userType)) {
+                JOptionPane.showMessageDialog(null, "User type " + userType + " already exists!",
+                    "User type already exists", JOptionPane.ERROR_MESSAGE);
+                return askForUserType();
+            }
         }
 
         return userType;
     }
 
-    private static String checkValidFileName(String name) {
+    public static String checkValidFileName(String name) {
         if (nonNull(name) && !name.isEmpty()) {
+            name = name.trim();
             File file = new File(name);
             boolean created;
 
             try {
                 created = file.createNewFile();
-                if (created) {
-                    file.delete();
+                if (created && file.delete()) {
                     return name.replace("_", " ");
                 }
             } catch (Exception e) {
@@ -107,13 +107,13 @@ public class DialogUtils {
     public static void cantDeleteActiveFolder() {
         JOptionPane.showMessageDialog(null,
             "Cannot delete active folder: "
-                + settings.getActiveFolder()
+                + frameComponents.getActiveFolder()
                 + "\n\nPlease use \"Save As\" in the file menu or manually delete the folder.",
             "Cannot delete active folder", JOptionPane.ERROR_MESSAGE);
     }
 
     public static void cantOpenFolder() {
-        JOptionPane.showMessageDialog(null, "Can't open evidence from folder! Evidence should be .png files",
+        JOptionPane.showMessageDialog(null, "Can't open evidence from folder! Evidence should be " + PNG.getExtension() + " files",
             "Can't open folder", JOptionPane.ERROR_MESSAGE);
     }
 
@@ -123,8 +123,8 @@ public class DialogUtils {
     }
 
     public static void cantAddTabUnderRegression() {
-        JOptionPane.showMessageDialog(null, "Cant create an AC in the regression tab",
-            "Can't add AC", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(null, "Cant create a Scenario in the regression tab",
+            "Can't add Scenario", JOptionPane.ERROR_MESSAGE);
     }
 
     public static void cantSaveGeneratedText(IOException e) {

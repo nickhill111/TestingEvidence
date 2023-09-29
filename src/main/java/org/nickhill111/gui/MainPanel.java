@@ -5,25 +5,27 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import org.apache.commons.io.FileUtils;
-import org.nickhill111.data.Settings;
+import org.nickhill111.data.FrameComponents;
 import org.nickhill111.util.DialogUtils;
 
+import static org.nickhill111.util.GuiUtils.PHOTO_SIZE;
+
 public class MainPanel extends JPanel {
-    Settings settings = Settings.getInstance();
+    FrameComponents frameComponents = FrameComponents.getInstance();
 
     public MainPanel() {
         setLayout(new BorderLayout());
 
         add(new ToolBar(), BorderLayout.PAGE_START);
 
-        UserTabbedPane userTabbedPane = new UserTabbedPane();
+        Users users = new Users();
 
         JPanel textAreaPanel = new JPanel();
         textAreaPanel.setLayout(new BorderLayout());
 
         String generatedText = "Currently no text generated. Please save to generate text.";
 
-        if (settings.isActivefolder()) {
+        if (frameComponents.isActiveFolder()) {
             generatedText = getGeneratedText(generatedText);
         }
 
@@ -31,18 +33,18 @@ public class MainPanel extends JPanel {
         generatedTextArea.setEditable(false);
         textAreaPanel.add(generatedTextArea, BorderLayout.CENTER);
 
-        settings.setGeneratedTextArea(generatedTextArea);
+        frameComponents.setGeneratedTextArea(generatedTextArea);
 
-        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, userTabbedPane, textAreaPanel);
+        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, users, textAreaPanel);
         setUpSplitPane(splitPane);
 
         add(splitPane, BorderLayout.CENTER);
 
-        settings.setMainPanel(this);
+        frameComponents.setMainPanel(this);
     }
 
     private String getGeneratedText(String generatedText) {
-        File generatedTextFile = new File(settings.getActiveFolder(), "GeneratedText.txt");
+        File generatedTextFile = new File(frameComponents.getActiveFolder(), "GeneratedText.txt");
 
         if (generatedTextFile.exists() && generatedTextFile.isFile()) {
             try {
@@ -59,7 +61,7 @@ public class MainPanel extends JPanel {
         splitPane.setContinuousLayout(true);
         splitPane.setOneTouchExpandable(true);
         splitPane.setDividerSize(15);
-        splitPane.getLeftComponent().setMinimumSize(new Dimension(0,300));
+        splitPane.getLeftComponent().setMinimumSize(new Dimension(PHOTO_SIZE, PHOTO_SIZE));
         splitPane.getRightComponent().setMinimumSize(new Dimension());
     }
 }

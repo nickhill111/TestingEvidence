@@ -2,6 +2,7 @@ package org.nickhill111.gui;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static org.apache.poi.common.usermodel.PictureType.PNG;
 import static org.nickhill111.model.TabNames.REGRESSION;
 
 import javax.swing.*;
@@ -12,19 +13,19 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.nickhill111.data.Settings;
+import org.nickhill111.data.FrameComponents;
 import org.nickhill111.util.DialogUtils;
 import org.nickhill111.util.GuiUtils;
 
-public class UserTabbedPane extends JTabbedPane {
-    private final Settings settings = Settings.getInstance();
+public class Users extends JTabbedPane {
+    private final FrameComponents frameComponents = FrameComponents.getInstance();
 
-    public UserTabbedPane() {
-        settings.setUserTabbedPane(this);
+    public Users() {
+        frameComponents.setUsers(this);
 
-        if (settings.isActivefolder()) {
-            File activeFolder = settings.getActiveFolder();
-            File[] evidenceToOpen = activeFolder.listFiles((dir, name) -> name.toLowerCase().endsWith(".png"));
+        if (frameComponents.isActiveFolder()) {
+            File activeFolder = frameComponents.getActiveFolder();
+            File[] evidenceToOpen = activeFolder.listFiles((dir, name) -> name.toLowerCase().endsWith(PNG.getExtension()));
 
             if (isNull(evidenceToOpen)) {
                 DialogUtils.cantOpenFolder();
@@ -37,8 +38,6 @@ public class UserTabbedPane extends JTabbedPane {
                 .distinct().toList();
 
             addUserTypeTabs(userTypes, evidenceToOpen);
-        } else {
-            addEmptyTab();
         }
 
         addMouseListener();
@@ -65,33 +64,33 @@ public class UserTabbedPane extends JTabbedPane {
                 return;
             }
 
-            AcTabbedPane acTabbedPane = new AcTabbedPane(files);
+            Scenarios scenarios = new Scenarios(files);
 
-            addTab(userType, acTabbedPane);
-            setSelectedComponent(acTabbedPane);
+            addTab(userType, scenarios);
+            setSelectedComponent(scenarios);
 
             GuiUtils.refreshComponent(this);
         }
     }
 
-    public AcTabbedPane getSelectedAcTabbedPane() {
-        if (getSelectedComponent() instanceof AcTabbedPane acTabbedPane) {
-            return acTabbedPane;
+    public Scenarios getSelectedScenarios() {
+        if (getSelectedComponent() instanceof Scenarios scenarios) {
+            return scenarios;
         }
 
         return null;
     }
 
-    public Map<String, List<PreviewPanel>> getAllPreviewPanels() {
-        Map<String, List<PreviewPanel>> allPreviewPanels = new HashMap<>();
+    public Map<String, List<ScenarioPanel>> getAllScenarioPanels() {
+        Map<String, List<ScenarioPanel>> allScenarioPanels = new HashMap<>();
 
         for (int i = 0; i < getTabCount(); i++) {
-            AcTabbedPane acTabbedPane = ((AcTabbedPane) getComponentAt(i));
+            Scenarios scenarios = ((Scenarios) getComponentAt(i));
 
-            allPreviewPanels.put(getTitleAt(i), acTabbedPane.getPreviewPanels());
+            allScenarioPanels.put(getTitleAt(i), scenarios.getScenarioPanels());
         }
 
-        return allPreviewPanels;
+        return allScenarioPanels;
     }
 
     public void addEmptyRegressionTab() {
@@ -102,10 +101,10 @@ public class UserTabbedPane extends JTabbedPane {
         if (doesRegressionTestingTabExist()) {
             DialogUtils.regressionTestTabAlreadyExists();
         } else {
-            AcTabbedPane acTabbedPane = new AcTabbedPane(files, true);
+            Scenarios scenarios = new Scenarios(files, true);
 
-            insertTab(REGRESSION.getValue(), null, acTabbedPane, null, 0);
-            setSelectedComponent(acTabbedPane);
+            insertTab(REGRESSION.getValue(), null, scenarios, null, 0);
+            setSelectedComponent(scenarios);
 
             GuiUtils.refreshComponent(this);
         }
@@ -146,7 +145,7 @@ public class UserTabbedPane extends JTabbedPane {
                     deleteMenuItem.addActionListener(e1 -> {
                         int index = getSelectedIndex();
                         removeTabAt(index);
-                        GuiUtils.refreshComponent(settings.getUserTabbedPane());
+                        GuiUtils.refreshComponent(frameComponents.getUsers());
                     });
                     menu.add(deleteMenuItem);
 

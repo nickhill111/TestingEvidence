@@ -3,6 +3,7 @@ package org.nickhill111;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
+import static org.nickhill111.util.DialogUtils.checkValidFileName;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,15 +11,15 @@ import java.io.File;
 import lc.kra.system.keyboard.GlobalKeyboardHook;
 import lc.kra.system.keyboard.event.GlobalKeyAdapter;
 import lc.kra.system.keyboard.event.GlobalKeyEvent;
-import org.nickhill111.data.Settings;
+import org.nickhill111.data.FrameComponents;
 import org.nickhill111.gui.MainPanel;
 import org.nickhill111.gui.MenuBar;
 import org.nickhill111.service.ScreenshotService;
 import org.nickhill111.util.DialogUtils;
+import org.nickhill111.util.GuiUtils;
 
 public class TestingEvidenceApplication {
-    private final Settings settings = Settings.getInstance();
-    private final Dimension GUI_SIZE = new Dimension(700, 500);
+    private final FrameComponents frameComponents = FrameComponents.getInstance();
 
     public TestingEvidenceApplication() {
         new TestingEvidenceApplication(null);
@@ -27,12 +28,12 @@ public class TestingEvidenceApplication {
         setLookAndFeel();
 
         JFrame gui = new JFrame();
-        settings.setFrame(gui);
-        settings.setActiveFolder(folderToOpenFrom);
+        frameComponents.setFrame(gui);
+        frameComponents.setActiveFolder(folderToOpenFrom);
 
-        if (!settings.isActivefolder()) {
-            String ticketNumber = DialogUtils.askForTicketNumber();
-            if (isNull(ticketNumber) || ticketNumber.isEmpty()) {
+        if (!frameComponents.isActiveFolder()) {
+            String ticketNumber = checkValidFileName(DialogUtils.askForTicketNumber());
+            if (isNull(ticketNumber)) {
                 System.exit(0);
             }
         } else {
@@ -46,7 +47,8 @@ public class TestingEvidenceApplication {
         gui.add(mainPanel);
 
         setupKeyboardHook();
-        setupGui(gui);
+        GuiUtils.setupGui(gui);
+        gui.setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
 
     private void setLookAndFeel() {
@@ -58,16 +60,16 @@ public class TestingEvidenceApplication {
     }
 
     private void setupKeyboardHook() {
-        GlobalKeyboardHook keyboardHook = settings.getKeyboardHook();
+        GlobalKeyboardHook keyboardHook = frameComponents.getKeyboardHook();
         if (nonNull(keyboardHook)) {
-            settings.getKeyboardHook().shutdownHook();
+            frameComponents.getKeyboardHook().shutdownHook();
         }
 
         keyboardHook = new GlobalKeyboardHook(false);
 
         keyboardHook.addKeyListener(createKeyListener());
 
-        settings.setKeyboardHook(keyboardHook);
+        frameComponents.setKeyboardHook(keyboardHook);
     }
 
     private GlobalKeyAdapter createKeyListener() {
@@ -78,21 +80,13 @@ public class TestingEvidenceApplication {
 
             @Override
             public void keyReleased(GlobalKeyEvent event) {
-                Frame gui = Settings.getInstance().getFrame();
+                Frame gui = FrameComponents.getInstance().getFrame();
 
                 if (!gui.isFocused() && event.getVirtualKeyCode() == GlobalKeyEvent.VK_F8) {
                     new ScreenshotService().takeAndAddScreenshot();
                 }
             }
         };
-    }
-
-    private void setupGui(JFrame gui) {
-        gui.setSize(GUI_SIZE);
-        gui.setLocationRelativeTo(null);
-        gui.setResizable(true);
-        gui.setDefaultCloseOperation(EXIT_ON_CLOSE);
-        gui.setVisible(true);
     }
 
     public static void main(String[] args) {
