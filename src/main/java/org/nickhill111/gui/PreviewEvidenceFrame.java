@@ -71,12 +71,12 @@ public class PreviewEvidenceFrame extends JFrame implements ComponentListener, M
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
         int wheelRotation = e.getWheelRotation();
-        double newScale = previewEvidencePanel.getScale() + (double) wheelRotation/10;
+        double newScale = previewEvidencePanel.getScale() - (double) wheelRotation/10;
 
         if (newScale <= 1.5 && newScale >= 0.3) {
             previewEvidencePanel.setScale(newScale);
             JSlider zoomSlider = toolBar.getZoomSlider();
-            zoomSlider.setValue(zoomSlider.getValue() + (wheelRotation * 10));
+            zoomSlider.setValue(zoomSlider.getValue() - (wheelRotation * 10));
         }
     }
 }
