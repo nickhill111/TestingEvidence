@@ -1,10 +1,14 @@
 package org.nickhill111.gui;
 
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static org.nickhill111.data.Icons.FAILED_ICON;
 import static org.nickhill111.data.Icons.PASSED_ICON;
+import static org.nickhill111.model.PassFailIcons.getValueFromGeneratedTextValue;
 import static org.nickhill111.model.TabNames.REGRESSION;
 import static org.nickhill111.model.TabNames.SCENARIO;
+import static org.nickhill111.util.FileUtils.GENERATED_TEXT_FILE_NAME;
+import static org.nickhill111.util.FileUtils.getScenariosFromFile;
 
 import javax.swing.*;
 import java.awt.event.MouseEvent;
@@ -13,6 +17,7 @@ import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 import org.nickhill111.data.FrameComponents;
+import org.nickhill111.model.PassFailIcons;
 import org.nickhill111.model.RegressionTab;
 import org.nickhill111.util.DialogUtils;
 import org.nickhill111.util.GuiUtils;
@@ -49,6 +54,8 @@ public class Scenarios extends JTabbedPane implements MouseListener {
         String userType = lastFileNameSplit[0];
         int lastFileNumber = Integer.parseInt(lastFileNameSplit[2]);
 
+        String generatedScenarioLines = getScenariosFromFile(new File(lastFile.getParentFile(), GENERATED_TEXT_FILE_NAME));
+
         for (int i = 1; i <= lastFileNumber; i++) {
             int finalI = i;
             List<File> filesForTab = files.stream()
@@ -58,9 +65,25 @@ public class Scenarios extends JTabbedPane implements MouseListener {
 
             ScrollPane scrollPane = new ScrollPane(scenarioPanel);
 
-            addTab(SCENARIO.getValue() + "_" + i, scrollPane);
+            String title = SCENARIO.getValue() + "_" + i;
+
+            addTab(title, scrollPane);
 
             selectNewComponent(scrollPane);
+
+            if (nonNull(generatedScenarioLines)) {
+                String generatedTextValue = generatedScenarioLines.split(title + ":")[1].trim().split(System.lineSeparator())[0];
+
+                tryToSetIconAt(i - 1, generatedTextValue);
+            }
+        }
+    }
+
+    private void tryToSetIconAt(int index, String generatedTextValue) {
+        PassFailIcons passFailIcons = getValueFromGeneratedTextValue(generatedTextValue.trim());
+
+        if (nonNull(passFailIcons)) {
+            setIconAt(index, passFailIcons.getIcon());
         }
     }
 

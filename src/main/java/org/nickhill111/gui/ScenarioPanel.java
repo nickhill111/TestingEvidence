@@ -1,9 +1,7 @@
 package org.nickhill111.gui;
 
 import static java.util.Objects.nonNull;
-import static org.apache.logging.log4j.util.Strings.isNotEmpty;
 import static org.apache.poi.common.usermodel.PictureType.PNG;
-import static org.nickhill111.data.Icons.PASSED_ICON;
 import static org.nickhill111.model.TabNames.SCENARIO;
 
 import javax.imageio.ImageIO;
@@ -19,6 +17,7 @@ import java.util.List;
 import lombok.SneakyThrows;
 import org.apache.poi.util.Units;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
+import org.nickhill111.model.PassFailIcons;
 import org.nickhill111.model.RegressionTab;
 import org.nickhill111.service.ScreenshotService;
 import org.nickhill111.util.DialogUtils;
@@ -91,11 +90,20 @@ public class ScenarioPanel extends JPanel {
         Component[] components = getComponentsInGbcOrder();
 
         if (components.length != 0) {
-            String iconValue = getIconValue();
-            run.setText(tabValue + ": " + getIconValueForWord(iconValue));
+            generatedText.append(tabValue).append(": ");
+            if (getParent().getParent().getParent() instanceof Scenarios scenarios) {
+                Icon icon = scenarios.getIconAt(scenarioNumber - 1);
+                PassFailIcons passFailIcons = PassFailIcons.getValueFromIcon(icon);
+                if (nonNull(passFailIcons)) {
+                    generatedText.append(passFailIcons.getGeneratedTextValue());
+                    run.setText(tabValue + ": " + passFailIcons.getGeneratedWordDocumentValue());
+                }
+
+            }
+
             run.addBreak();
             run.addBreak();
-            generatedText.append(tabValue).append(": ").append(iconValue).append("\n\n ");
+            generatedText.append("\n\n ");
 
             for (Component component : components) {
                 try {
@@ -134,34 +142,6 @@ public class ScenarioPanel extends JPanel {
         }
 
         return generatedText.toString();
-    }
-
-    private String getIconValueForWord(String iconValue) {
-        if (nonNull(iconValue) && isNotEmpty(iconValue)) {
-            if (iconValue.equals("(/)")) {
-                return "PASSED";
-            }
-
-            return "FAILED";
-        }
-
-        return "";
-    }
-
-    private String getIconValue() {
-        if (getParent().getParent().getParent() instanceof Scenarios scenarios) {
-            Icon icon = scenarios.getIconAt(scenarioNumber - 1);
-
-            if (nonNull(icon)) {
-                if (icon.equals(PASSED_ICON)) {
-                    return "(/)";
-                }
-
-                return "(x)";
-            }
-        }
-
-        return "";
     }
 
     private boolean savePhoto(BufferedImage image, File file) {

@@ -2,6 +2,7 @@ package org.nickhill111.service;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static org.nickhill111.util.FileUtils.GENERATED_TEXT_FILE_NAME;
 import static org.nickhill111.util.FileUtils.deleteOldFiles;
 
 import javax.swing.*;
@@ -151,7 +152,7 @@ public class SavingService {
     private void saveGeneratedTextToFile(File folder) {
         String text = frameComponents.getGeneratedTextArea().getText();
         try {
-            FileUtils.writeStringToFile(new File(folder, "GeneratedText.txt"), text, StandardCharsets.UTF_8);
+            FileUtils.writeStringToFile(new File(folder, GENERATED_TEXT_FILE_NAME), text, StandardCharsets.UTF_8);
             FileOutputStream out = new FileOutputStream( new File(folder, frameComponents.getFrame().getTitle() + "-Evidence.docx"));
             document.write(out);
             out.close();

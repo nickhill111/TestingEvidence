@@ -10,6 +10,7 @@ import org.nickhill111.data.FrameComponents;
 import org.nickhill111.util.DialogUtils;
 
 import static java.util.Objects.nonNull;
+import static org.nickhill111.util.FileUtils.GENERATED_TEXT_FILE_NAME;
 import static org.nickhill111.util.GuiUtils.PHOTO_SIZE;
 
 public class MainPanel extends JPanel {
@@ -47,7 +48,7 @@ public class MainPanel extends JPanel {
     }
 
     private String getGeneratedText(String generatedText) {
-        File generatedTextFile = new File(config.getConfigDetails().getOpenedFolderPath(), "GeneratedText.txt");
+        File generatedTextFile = new File(config.getConfigDetails().getOpenedFolderPath(), GENERATED_TEXT_FILE_NAME);
 
         if (generatedTextFile.exists() && generatedTextFile.isFile()) {
             try {
