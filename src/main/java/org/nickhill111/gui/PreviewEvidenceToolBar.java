@@ -1,5 +1,6 @@
 package org.nickhill111.gui;
 
+import lombok.Getter;
 import org.nickhill111.data.Config;
 import org.nickhill111.data.FrameComponents;
 
@@ -13,8 +14,10 @@ import static org.nickhill111.util.GuiUtils.SMALL_FONT;
 import static org.nickhill111.util.GuiUtils.TITLE_FONT;
 import static org.nickhill111.util.GuiUtils.convertZoomValueToScale;
 
+@Getter
 public class PreviewEvidenceToolBar extends JToolBar {
     private final PreviewEvidencePanel picture;
+    private JSlider zoomSlider;
     private final FrameComponents frameComponents = FrameComponents.getInstance();
     private final Config config = Config.getInstance();
 
@@ -87,5 +90,6 @@ public class PreviewEvidenceToolBar extends JToolBar {
         });
 
         add(zoomSlider);
+        this.zoomSlider = zoomSlider;
     }
 }

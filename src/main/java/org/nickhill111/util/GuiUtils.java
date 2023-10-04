@@ -1,6 +1,8 @@
 package org.nickhill111.util;
 
+import org.nickhill111.data.Config;
 import org.nickhill111.data.FrameComponents;
+import org.nickhill111.data.Personalisation;
 import org.nickhill111.gui.Scenarios;
 
 import javax.swing.*;
@@ -9,6 +11,7 @@ import java.awt.event.HierarchyBoundsAdapter;
 import java.awt.event.HierarchyEvent;
 
 import static java.util.Objects.nonNull;
+import static org.apache.logging.log4j.util.Strings.isEmpty;
 
 public class GuiUtils {
     private static final Dimension DEFAULT_GUI_SIZE = new Dimension(700, 500);
@@ -16,6 +19,19 @@ public class GuiUtils {
     public static final Font TITLE_FONT = getFont(60);
     public static final Font MEDIUM_FONT = getFont(24);
     public static final Font SMALL_FONT = getFont(14);
+
+    public static void setLookAndFeel() {
+        try {
+            Personalisation personalisation = Config.getInstance().getConfigDetails().getPersonalisation();
+            if (isEmpty(personalisation.getLookAndFeel())) {
+                personalisation.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            }
+
+            UIManager.setLookAndFeel(personalisation.getLookAndFeel());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     public static void refreshComponent(Component component) {
         component.revalidate();

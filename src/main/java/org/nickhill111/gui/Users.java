@@ -13,18 +13,23 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.nickhill111.data.Config;
 import org.nickhill111.data.FrameComponents;
 import org.nickhill111.util.DialogUtils;
 import org.nickhill111.util.GuiUtils;
 
-public class Users extends JTabbedPane {
+public class Users extends JTabbedPane implements MouseListener {
     private final FrameComponents frameComponents = FrameComponents.getInstance();
 
     public Users() {
         frameComponents.setUsers(this);
 
-        if (frameComponents.isActiveFolder()) {
-            File activeFolder = frameComponents.getActiveFolder();
+        addMouseListener(this);
+
+        Config config = Config.getInstance();
+        if (config.isOpenedFolderPathActive()) {
+            File activeFolder = new File(config.getConfigDetails().getOpenedFolderPath());
             File[] evidenceToOpen = activeFolder.listFiles((dir, name) -> name.toLowerCase().endsWith(PNG.getExtension()));
 
             if (isNull(evidenceToOpen)) {
@@ -39,8 +44,6 @@ public class Users extends JTabbedPane {
 
             addUserTypeTabs(userTypes, evidenceToOpen);
         }
-
-        addMouseListener();
     }
 
     private void addUserTypeTabs(List<String> userTypes, File[] evidenceToOpen) {
@@ -124,44 +127,36 @@ public class Users extends JTabbedPane {
         return false;
     }
 
-    private void addMouseListener() {
-        addMouseListener(new MouseListener() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
+    @Override
+    public void mouseClicked(MouseEvent e) {
+    }
 
-            }
+    @Override
+    public void mousePressed(MouseEvent e) {
+    }
 
-            @Override
-            public void mousePressed(MouseEvent e) {
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        if (getTabCount() > 1 && e.getModifiersEx() == MouseEvent.META_DOWN_MASK && e.getClickCount() == 1) {
+            JPopupMenu menu = new JPopupMenu();
 
-            }
+            JMenuItem deleteMenuItem = new JMenuItem("Delete");
+            deleteMenuItem.addActionListener(e1 -> {
+                int index = getSelectedIndex();
+                removeTabAt(index);
+                GuiUtils.refreshComponent(frameComponents.getUsers());
+            });
+            menu.add(deleteMenuItem);
 
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                if (getTabCount() > 1 && e.getModifiersEx() == MouseEvent.META_DOWN_MASK && e.getClickCount() == 1) {
-                    JPopupMenu menu = new JPopupMenu();
+            menu.show(e.getComponent(), e.getX(), e.getY());
+        }
+    }
 
-                    JMenuItem deleteMenuItem = new JMenuItem("Delete");
-                    deleteMenuItem.addActionListener(e1 -> {
-                        int index = getSelectedIndex();
-                        removeTabAt(index);
-                        GuiUtils.refreshComponent(frameComponents.getUsers());
-                    });
-                    menu.add(deleteMenuItem);
+    @Override
+    public void mouseEntered(MouseEvent e) {
+    }
 
-                    menu.show(e.getComponent(), e.getX(), e.getY());
-                }
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-
-            }
-        });
+    @Override
+    public void mouseExited(MouseEvent e) {
     }
 }

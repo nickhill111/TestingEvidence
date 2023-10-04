@@ -17,12 +17,12 @@ import org.nickhill111.model.RegressionTab;
 import org.nickhill111.util.DialogUtils;
 import org.nickhill111.util.GuiUtils;
 
-public class Scenarios extends JTabbedPane {
+public class Scenarios extends JTabbedPane implements MouseListener {
     private final FrameComponents frameComponents = FrameComponents.getInstance();
 
     public Scenarios(List<File> files) {
         addScenarioTab(files);
-        addMouseListener();
+        addMouseListener(this);
     }
 
     public Scenarios(List<File> files, boolean isRegression) {
@@ -31,7 +31,7 @@ public class Scenarios extends JTabbedPane {
         } else {
             addScenarioTab(files);
         }
-        addMouseListener();
+        addMouseListener(this);
     }
 
     private void addScenarioTab(List<File> files) {
@@ -135,73 +135,69 @@ public class Scenarios extends JTabbedPane {
         GuiUtils.refreshComponent(this);
     }
 
-    private void addMouseListener() {
-        addMouseListener(new MouseListener() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                if (e.getModifiersEx() == MouseEvent.META_DOWN_MASK && e.getClickCount() == 1) {
-                    int selectedIndex = getSelectedIndex();
-
-                    JPopupMenu menu = new JPopupMenu();
-                    if (getTitleAt(selectedIndex).equals(SCENARIO.getValue() + "_" + (getTabCount()))) {
-
-                        JMenuItem deleteMenuItem = new JMenuItem("Delete");
-                        deleteMenuItem.addActionListener(e1 -> {
-                            removeTabAt(selectedIndex);
-                            GuiUtils.refreshComponent(frameComponents.getFrame());
-                        });
-                        menu.add(deleteMenuItem);
-                    }
-
-                    JMenuItem passMenuItem = new JMenuItem("Pass");
-                    passMenuItem.addActionListener(e1 -> setIconAt(selectedIndex, PASSED_ICON));
-                    menu.add(passMenuItem);
-
-                    JMenuItem failMenuItem = new JMenuItem("Fail");
-                    failMenuItem.addActionListener(e1 -> setIconAt(selectedIndex, FAILED_ICON));
-                    menu.add(failMenuItem);
-
-
-                    JMenuItem removeAllEvidence = new JMenuItem("Remove all evidence");
-                    removeAllEvidence.addActionListener(e1 -> {
-                        if (getComponentAt(selectedIndex) instanceof ScrollPane scrollPane) {
-                            scrollPane.getScenarioPanel().removeAll();
-                            GuiUtils.refreshComponent(scrollPane);
-                        }
-                    });
-                    menu.add(removeAllEvidence);
-
-                    menu.show(e.getComponent(), e.getX(), e.getY());
-                }
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-
-            }
-        });
-    }
-
     public ScenarioPanel getSelectedScenario() {
         if (getSelectedComponent() instanceof ScrollPane scrollPane) {
             return scrollPane.getScenarioPanel();
         }
 
         return null;
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        if (e.getModifiersEx() == MouseEvent.META_DOWN_MASK && e.getClickCount() == 1) {
+            int selectedIndex = getSelectedIndex();
+
+            JPopupMenu menu = new JPopupMenu();
+            if (getTitleAt(selectedIndex).equals(SCENARIO.getValue() + "_" + (getTabCount()))) {
+
+                JMenuItem deleteMenuItem = new JMenuItem("Delete");
+                deleteMenuItem.addActionListener(e1 -> {
+                    removeTabAt(selectedIndex);
+                    GuiUtils.refreshComponent(frameComponents.getFrame());
+                });
+                menu.add(deleteMenuItem);
+            }
+
+            JMenuItem passMenuItem = new JMenuItem("Pass");
+            passMenuItem.addActionListener(e1 -> setIconAt(selectedIndex, PASSED_ICON));
+            menu.add(passMenuItem);
+
+            JMenuItem failMenuItem = new JMenuItem("Fail");
+            failMenuItem.addActionListener(e1 -> setIconAt(selectedIndex, FAILED_ICON));
+            menu.add(failMenuItem);
+
+
+            JMenuItem removeAllEvidence = new JMenuItem("Remove all evidence");
+            removeAllEvidence.addActionListener(e1 -> {
+                if (getComponentAt(selectedIndex) instanceof ScrollPane scrollPane) {
+                    scrollPane.getScenarioPanel().removeAll();
+                    GuiUtils.refreshComponent(scrollPane);
+                }
+            });
+            menu.add(removeAllEvidence);
+
+            menu.show(e.getComponent(), e.getX(), e.getY());
+        }
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+
     }
 }

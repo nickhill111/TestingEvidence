@@ -196,9 +196,6 @@ public class MenuBar extends JMenuBar {
                 "<br>" +
                 "Using this as a todo section for the moment:<br>" +
                 "finish this dialog and the help dialog (need to change this to html)<br>" +
-                "change icon<br>" +
-                "Rearrange toolbar<br>" +
-                "update labels to icons<br>" +
                 "pack-up into a jar" +
                 "</html>");
             aboutFrame.add(aboutDialog);
@@ -238,7 +235,7 @@ public class MenuBar extends JMenuBar {
             JLabel helpDialog = new JLabel("<html>" +
                 "<h1>Help:</h1>" +
                 "<br>" +
-                "Please refer to the readme file <a href=\"https://github.com/nickhill111/TestingEvidence/blob/main/README.md\">here</a>" + //TODO: update url
+                "Please refer to the readme file <a href=\"https://github.com/nickhill111/TestingEvidence/blob/main/README.md\">here</a>" +
                 "<br>" +
                 "<br>" +
                 "Alternatively if you cant find an answer there then <br>" +

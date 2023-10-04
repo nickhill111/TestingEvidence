@@ -1,5 +1,6 @@
 package org.nickhill111.data;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,6 +17,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import static java.util.Objects.nonNull;
 import static org.nickhill111.util.FileUtils.deleteOldFiles;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -112,5 +114,10 @@ public class Config {
         frameConfigDetails.setWindowState(gui.getExtendedState());
         frameConfigDetails.setWindowScreenId(gui.getGraphicsConfiguration().getDevice().getIDstring());
         saveConfig();
+    }
+
+    @JsonIgnore
+    public boolean isOpenedFolderPathActive() {
+        return nonNull(getConfigDetails().getOpenedFolderPath()) && new File(getConfigDetails().getOpenedFolderPath()).exists();
     }
 }

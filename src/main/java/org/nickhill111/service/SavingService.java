@@ -34,7 +34,7 @@ public class SavingService {
 
             new Thread(() -> {
                 try {
-                    if (frameComponents.isActiveFolder()) {
+                    if (config.isOpenedFolderPathActive()) {
                         saveScreenshots();
                     } else {
                         saveAllScreenshotsWithFileChooser();
@@ -52,7 +52,9 @@ public class SavingService {
     }
 
     public void saveAllScreenshotsWithFileChooser() {
-        if (!frameComponents.isActiveFolder()) {
+        String previousTitle = frameComponents.getFrame().getTitle();
+
+        if (!config.isOpenedFolderPathActive()) {
             String ticketNumber = DialogUtils.askForTicketNumber();
             if (isNull(ticketNumber)) {
                 return;
@@ -66,29 +68,27 @@ public class SavingService {
         int userSelection = fileChooser.showSaveDialog(null);
 
         if (userSelection == JFileChooser.APPROVE_OPTION) {
-            File folderToSave = fileChooser.getSelectedFile();
+            File folderToSave = getFolderName(fileChooser.getSelectedFile());
             saveScreenshots(folderToSave);
 
             configDetails.setFileChooserLocation(folderToSave.getAbsolutePath());
             config.saveConfig();
+        } else {
+            frameComponents.getFrame().setTitle(previousTitle);
         }
     }
 
     private void saveScreenshots() {
-        saveScreenshots(frameComponents.getActiveFolder());
+        saveScreenshots(new File(config.getConfigDetails().getOpenedFolderPath()));
     }
 
     private void saveScreenshots(File folder) {
-        if (!folder.equals(frameComponents.getActiveFolder())) {
-            folder = getFolderName(folder);
-        }
-
         File[] existingFiles = folder.listFiles();
 
         frameComponents.getFrame().setTitle(folder.getName());
 
         if (folder.exists() || folder.mkdirs()) {
-            frameComponents.setActiveFolder(folder);
+            config.getConfigDetails().setOpenedFolderPath(folder.getAbsolutePath());
 
             generateTextAndScreenshots(folder);
 
@@ -162,14 +162,11 @@ public class SavingService {
     }
 
     public File getFolderName(File folder) {
-        return getFolderName(folder, 1);
-    }
-
-    public File getFolderName(File folder, int number) {
         folder = new File(folder, frameComponents.getFrame().getTitle());
 
         File temporaryFolder = new File(folder.getAbsolutePath());
 
+        int number = 1;
         while (temporaryFolder.exists()) {
             temporaryFolder = new File(folder.getAbsolutePath() + "-" + number);
             number++;

@@ -8,5 +8,6 @@ import lombok.Getter;
 public enum TabNames {
     REGRESSION("Regression"),
     SCENARIO("Scenario");
+
     private final String value;
 }

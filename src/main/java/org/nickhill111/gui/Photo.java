@@ -17,17 +17,17 @@ import org.imgscalr.Scalr;
 import static org.nickhill111.util.GuiUtils.PHOTO_SIZE;
 
 @Getter
-public class Photo extends JPanel {
+public class Photo extends JPanel implements MouseListener {
     private final FrameComponents frameComponents = FrameComponents.getInstance();
     private final BufferedImage originalImage;
 
     public Photo(BufferedImage image) {
         this.originalImage = image;
+        addMouseListener(this);
 
         addPicture(image);
         add(Box.createRigidArea(new Dimension(0, 10)));
         add(new PhotoButtons(image));
-        addMouseListener();
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
     }
@@ -38,59 +38,6 @@ public class Photo extends JPanel {
         picLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         add(picLabel);
-    }
-
-    private void addMouseListener() {
-        addMouseListener(new MouseListener() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-            }
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                if (e.getModifiersEx() == MouseEvent.META_DOWN_MASK && e.getClickCount() == 1) {
-                    JPopupMenu menu = new JPopupMenu();
-
-                    JMenu moveToMenu = new JMenu("Move to");
-                    menu.add(moveToMenu);
-
-                    Map<String, List<ScenarioPanel>> allPreviewPanels = frameComponents.getUsers().getAllScenarioPanels();
-
-                    for (String user : allPreviewPanels.keySet()) {
-                        JMenu userMenu = new JMenu(user);
-
-                        for (ScenarioPanel scenarioPanel : allPreviewPanels.get(user)) {
-                            JMenuItem scenario = new JMenuItem(scenarioPanel.getTabValue());
-                            scenario.addActionListener(e1 -> {
-                                if (e.getSource() instanceof Photo photo) {
-                                    removePhoto();
-                                    scenarioPanel.addEvidence(photo.getOriginalImage());
-
-                                    GuiUtils.refreshComponent(frameComponents.getFrame());
-                                }
-                            });
-                            userMenu.add(scenario);
-                        }
-                        moveToMenu.add(userMenu);
-                    }
-
-
-                    menu.show(e.getComponent(), e.getX(), e.getY());
-                }
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-            }
-        });
     }
 
     public void removePhoto() {
@@ -113,5 +60,53 @@ public class Photo extends JPanel {
             });
 
         GuiUtils.refreshComponent(previewPanelComp);
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        if (e.getModifiersEx() == MouseEvent.META_DOWN_MASK && e.getClickCount() == 1) {
+            JPopupMenu menu = new JPopupMenu();
+
+            JMenu moveToMenu = new JMenu("Move to");
+            menu.add(moveToMenu);
+
+            Map<String, List<ScenarioPanel>> allPreviewPanels = frameComponents.getUsers().getAllScenarioPanels();
+
+            for (String user : allPreviewPanels.keySet()) {
+                JMenu userMenu = new JMenu(user);
+
+                for (ScenarioPanel scenarioPanel : allPreviewPanels.get(user)) {
+                    JMenuItem scenario = new JMenuItem(scenarioPanel.getTabValue());
+                    scenario.addActionListener(e1 -> {
+                        if (e.getSource() instanceof Photo photo) {
+                            removePhoto();
+                            scenarioPanel.addEvidence(photo.getOriginalImage());
+
+                            GuiUtils.refreshComponent(frameComponents.getFrame());
+                        }
+                    });
+                    userMenu.add(scenario);
+                }
+                moveToMenu.add(userMenu);
+            }
+
+            menu.show(e.getComponent(), e.getX(), e.getY());
+        }
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
     }
 }

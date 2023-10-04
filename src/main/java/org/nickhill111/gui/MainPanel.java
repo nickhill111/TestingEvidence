@@ -28,7 +28,7 @@ public class MainPanel extends JPanel {
 
         String generatedText = "Currently no text generated. Please save to generate text.";
 
-        if (frameComponents.isActiveFolder()) {
+        if (config.isOpenedFolderPathActive()) {
             generatedText = getGeneratedText(generatedText);
         }
 
@@ -47,7 +47,7 @@ public class MainPanel extends JPanel {
     }
 
     private String getGeneratedText(String generatedText) {
-        File generatedTextFile = new File(frameComponents.getActiveFolder(), "GeneratedText.txt");
+        File generatedTextFile = new File(config.getConfigDetails().getOpenedFolderPath(), "GeneratedText.txt");
 
         if (generatedTextFile.exists() && generatedTextFile.isFile()) {
             try {
