@@ -11,6 +11,8 @@ import org.nickhill111.gui.MainPanel;
 import org.nickhill111.gui.ToolBar;
 import org.nickhill111.gui.Users;
 
+import javax.swing.*;
+
 import static java.util.Objects.nonNull;
 
 @Getter
@@ -19,7 +21,7 @@ import static java.util.Objects.nonNull;
 public class FrameComponents {
     private static FrameComponents INSTANCE;
 
-    private Frame frame;
+    private JFrame frame;
     private MainPanel mainPanel;
     private ToolBar toolBar;
     private Users users;
@@ -29,7 +31,7 @@ public class FrameComponents {
     private GlobalKeyboardHook keyboardHook;
 
     public static FrameComponents getInstance() {
-        if(INSTANCE == null) {
+        if (INSTANCE == null) {
             INSTANCE = new FrameComponents();
         }
 

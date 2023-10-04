@@ -1,6 +1,8 @@
 package org.nickhill111.gui;
 
 import static java.util.Objects.isNull;
+import static org.nickhill111.data.Icons.FAILED_ICON;
+import static org.nickhill111.data.Icons.PASSED_ICON;
 import static org.nickhill111.model.TabNames.REGRESSION;
 import static org.nickhill111.model.TabNames.SCENARIO;
 
@@ -151,7 +153,7 @@ public class Scenarios extends JTabbedPane {
                     int selectedIndex = getSelectedIndex();
 
                     JPopupMenu menu = new JPopupMenu();
-                    if (getTabCount() > 1 && selectedIndex == getTabCount() - 1 && getTitleAt(selectedIndex).startsWith(SCENARIO.getValue() + " ")) {
+                    if (getTitleAt(selectedIndex).equals(SCENARIO.getValue() + "_" + (getTabCount()))) {
 
                         JMenuItem deleteMenuItem = new JMenuItem("Delete");
                         deleteMenuItem.addActionListener(e1 -> {
@@ -160,6 +162,15 @@ public class Scenarios extends JTabbedPane {
                         });
                         menu.add(deleteMenuItem);
                     }
+
+                    JMenuItem passMenuItem = new JMenuItem("Pass");
+                    passMenuItem.addActionListener(e1 -> setIconAt(selectedIndex, PASSED_ICON));
+                    menu.add(passMenuItem);
+
+                    JMenuItem failMenuItem = new JMenuItem("Fail");
+                    failMenuItem.addActionListener(e1 -> setIconAt(selectedIndex, FAILED_ICON));
+                    menu.add(failMenuItem);
+
 
                     JMenuItem removeAllEvidence = new JMenuItem("Remove all evidence");
                     removeAllEvidence.addActionListener(e1 -> {

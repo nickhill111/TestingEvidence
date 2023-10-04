@@ -4,24 +4,24 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.nickhill111.util.DialogUtils;
 
+import javax.swing.*;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import static org.nickhill111.util.FileUtils.deleteEntireFolder;
+import static org.nickhill111.util.FileUtils.deleteOldFiles;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
-@Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class Config {
     private static Config INSTANCE;
 
@@ -30,7 +30,8 @@ public class Config {
     private static final File CONFIG_FOLDER = new File(CONFIG_PARENT_FILE, CONFIG_NAME);
     private static final File CONFIG_FILE = new File(CONFIG_FOLDER, CONFIG_NAME + ".txt");
 
-    private final ConfigDetails configDetails = readConfigDetails();
+    private ConfigDetails configDetails = readConfigDetails();
+    private boolean savingInProgress = false;
 
     public static Config getInstance() {
         if(INSTANCE == null) {
@@ -54,7 +55,11 @@ public class Config {
         }
 
         try {
-            return new ObjectMapper().readValue(new FileInputStream(CONFIG_FILE), ConfigDetails.class);
+            FileInputStream fileInputStream = new FileInputStream(CONFIG_FILE);
+            ConfigDetails readConfigDetails = new ObjectMapper().readValue(fileInputStream, ConfigDetails.class);
+            fileInputStream.close();
+
+            return readConfigDetails;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -63,6 +68,16 @@ public class Config {
     }
 
     public void saveConfig() {
+        if (!savingInProgress) {
+            savingInProgress = true;
+            new Thread(() -> {
+                saveConfigAfterCheck();
+                savingInProgress = false;
+            }).start();
+        }
+    }
+
+    private void saveConfigAfterCheck() {
         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
         try {
             String json = ow.writeValueAsString(configDetails);
@@ -75,17 +90,27 @@ public class Config {
             writer.write(json);
             writer.close();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            if (!FileNotFoundException.class.equals(e.getClass())) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
     public void reset() {
-        INSTANCE = new Config();
-
+        configDetails = null;
         if (CONFIG_FOLDER.exists()) {
-            deleteEntireFolder(new File[]{CONFIG_FOLDER});
+            deleteOldFiles(new File[]{CONFIG_FOLDER});
         }
 
         DialogUtils.configHasBeenReset();
+    }
+
+    public void saveFrameConfigDetails() {
+        FrameConfigDetails frameConfigDetails = getConfigDetails().getFrameConfigDetails();
+        JFrame gui = FrameComponents.getInstance().getFrame();
+        frameConfigDetails.setWindowSize(gui.getSize());
+        frameConfigDetails.setWindowState(gui.getExtendedState());
+        frameConfigDetails.setWindowScreenId(gui.getGraphicsConfiguration().getDevice().getIDstring());
+        saveConfig();
     }
 }

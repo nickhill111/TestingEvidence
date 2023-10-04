@@ -11,21 +11,21 @@ import org.nickhill111.data.FrameComponents;
 import org.nickhill111.gui.Users;
 
 public class DialogUtils {
-    static FrameComponents frameComponents = FrameComponents.getInstance();
+    private final static FrameComponents FRAME_COMPONENTS = FrameComponents.getInstance();
 
     public static void cantSaveDialog(Exception e) {
-        JOptionPane.showMessageDialog(null, "Cannot save screenshots!\n\n" + e.getMessage(),
+        JOptionPane.showMessageDialog(FRAME_COMPONENTS.getFrame(), "Cannot save screenshots!\n\n" + e.getMessage(),
             "Cannot save screenshots", JOptionPane.ERROR_MESSAGE);
     }
 
     public static void cantTakeScreenshotDialog(Exception e) {
-        JOptionPane.showMessageDialog(null, "Cannot take screenshot!\n\n" + e.getMessage(),
+        JOptionPane.showMessageDialog(FRAME_COMPONENTS.getFrame(), "Cannot take screenshot!\n\n" + e.getMessage(),
             "Cannot take screenshot", JOptionPane.ERROR_MESSAGE);
     }
 
     public static void screenshotsSavedDialog(File folder) {
         String folderPath = folder.getPath();
-        int dialogButton = JOptionPane.showConfirmDialog(null,
+        int dialogButton = JOptionPane.showConfirmDialog(FRAME_COMPONENTS.getFrame(),
             "Screenshots saved to: " + folderPath + "\n\n Would you like to open the folder?",
             "Screenshots Saved", JOptionPane.YES_NO_OPTION);
 
@@ -33,25 +33,19 @@ public class DialogUtils {
             try {
                 Desktop.getDesktop().open(folder);
             } catch (IOException e) {
-                JOptionPane.showMessageDialog(null, "Cannot open " + folderPath + ":\n\n" + e.getMessage(),
+                JOptionPane.showMessageDialog(FRAME_COMPONENTS.getFrame(), "Cannot open " + folderPath + ":\n\n" + e.getMessage(),
                     "Cannot open folder", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
 
     public static String askForTicketNumber() {
-        if (frameComponents.isActiveFolder()) {
-            JOptionPane.showMessageDialog(null, "Cannot change ticket number after saving!",
-                "Unable to change ticket number", JOptionPane.ERROR_MESSAGE);
-            return null;
-        }
-
         String ticketNumber = JOptionPane.showInputDialog("Enter ticket number please");
 
         ticketNumber = checkValidFileName(ticketNumber);
 
         if (nonNull(ticketNumber)) {
-            frameComponents.getFrame().setTitle(ticketNumber);
+            FRAME_COMPONENTS.getFrame().setTitle(ticketNumber);
         }
 
         return ticketNumber;
@@ -67,10 +61,10 @@ public class DialogUtils {
 
     private static String validateUserType(String userType) {
         if (nonNull(userType)) {
-            Users users = frameComponents.getUsers();
+            Users users = FRAME_COMPONENTS.getUsers();
 
             if (users.doesUserExist(userType)) {
-                JOptionPane.showMessageDialog(null, "User type " + userType + " already exists!",
+                JOptionPane.showMessageDialog(FRAME_COMPONENTS.getFrame(), "User type " + userType + " already exists!",
                     "User type already exists", JOptionPane.ERROR_MESSAGE);
                 return askForUserType();
             }
@@ -81,79 +75,75 @@ public class DialogUtils {
 
     public static String checkValidFileName(String name) {
         if (nonNull(name) && !name.isEmpty()) {
-            name = name.trim();
-            File file = new File(name);
-            boolean created;
+            name = name.trim().replace("_", " ");
 
-            try {
-                created = file.createNewFile();
-                if (created && file.delete()) {
-                    return name.replace("_", " ");
-                }
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(null, name + " is not a valid name!",
-                    "Invalid name", JOptionPane.ERROR_MESSAGE);
+            if (name.matches("^[A-Za-z0-9- ]*$")) {
+                return name;
             }
+
+            JOptionPane.showMessageDialog(FRAME_COMPONENTS.getFrame(), name + " is not a valid name!\n" +
+                    "Please only use letters, numbers, spaces or -",
+                "Invalid name", JOptionPane.ERROR_MESSAGE);
         }
 
         return null;
     }
 
     public static void regressionTestTabAlreadyExists() {
-        JOptionPane.showMessageDialog(null, "Regression test tab already exists!",
+        JOptionPane.showMessageDialog(FRAME_COMPONENTS.getFrame(), "Regression test tab already exists!",
             "Regression test tab exists", JOptionPane.ERROR_MESSAGE);
     }
 
-    public static void cantDeleteActiveFolder() {
-        JOptionPane.showMessageDialog(null,
-            "Cannot delete active folder: "
-                + frameComponents.getActiveFolder()
+    public static void cantDeleteFile(String filePath) {
+        JOptionPane.showMessageDialog(FRAME_COMPONENTS.getFrame(),
+            "Cannot delete file: "
+                + filePath
                 + "\n\nPlease use \"Save As\" in the file menu or manually delete the folder.",
             "Cannot delete active folder", JOptionPane.ERROR_MESSAGE);
     }
 
     public static void cantOpenFolder() {
-        JOptionPane.showMessageDialog(null, "Can't open evidence from folder! Evidence should be " + PNG.getExtension() + " files",
+        JOptionPane.showMessageDialog(FRAME_COMPONENTS.getFrame(), "Can't open evidence from folder! Evidence should be " + PNG.getExtension() + " files",
             "Can't open folder", JOptionPane.ERROR_MESSAGE);
     }
 
     public static void unableToOpenImageDialog(File file) {
-        JOptionPane.showMessageDialog(null, "Unable to open image: " + file.getAbsolutePath(),
+        JOptionPane.showMessageDialog(FRAME_COMPONENTS.getFrame(), "Unable to open image: " + file.getAbsolutePath(),
             "Can't open image", JOptionPane.ERROR_MESSAGE);
     }
 
     public static void cantAddTabUnderRegression() {
-        JOptionPane.showMessageDialog(null, "Cant create a Scenario in the regression tab",
+        JOptionPane.showMessageDialog(FRAME_COMPONENTS.getFrame(), "Cant create a Scenario in the regression tab",
             "Can't add Scenario", JOptionPane.ERROR_MESSAGE);
     }
 
     public static void cantSaveGeneratedText(IOException e) {
-        JOptionPane.showMessageDialog(null, "Cant save generated text to file: \n\n" + e.getMessage(),
+        JOptionPane.showMessageDialog(FRAME_COMPONENTS.getFrame(), "Cant save generated text to file: \n\n" + e.getMessage(),
             "Can't save generated text", JOptionPane.ERROR_MESSAGE);
     }
 
     public static void cantReadGeneratedTextFile(File generatedTextFile) {
-        JOptionPane.showMessageDialog(null, "Cant read from generated text file: " + generatedTextFile.getAbsolutePath(),
+        JOptionPane.showMessageDialog(FRAME_COMPONENTS.getFrame(), "Cant read from generated text file: " + generatedTextFile.getAbsolutePath(),
             "Can't read file", JOptionPane.ERROR_MESSAGE);
     }
 
     public static void currentlySavingDialog() {
-        JOptionPane.showMessageDialog(null, "Currently saving, please wait till it is saved to save again",
+        JOptionPane.showMessageDialog(FRAME_COMPONENTS.getFrame(), "Currently saving, please wait till it is saved to save again",
             "Currently saving", JOptionPane.ERROR_MESSAGE);
     }
 
     public static void cantCreateConfig() {
-        JOptionPane.showMessageDialog(null, "Unable to create the config!",
+        JOptionPane.showMessageDialog(FRAME_COMPONENTS.getFrame(), "Unable to create the config!",
             "Cant create config", JOptionPane.ERROR_MESSAGE);
     }
 
     public static void cantSaveConfig() {
-        JOptionPane.showMessageDialog(null, "Unable to save the config!\n\nPlease go to preferences -> reset config to amend",
+        JOptionPane.showMessageDialog(FRAME_COMPONENTS.getFrame(), "Unable to save the config!\n\nPlease go to preferences -> reset config to amend",
             "Cant save config", JOptionPane.ERROR_MESSAGE);
     }
 
     public static void lookAndFeelChangedSuccessfully() {
-        JOptionPane.showMessageDialog(null, """
+        JOptionPane.showMessageDialog(FRAME_COMPONENTS.getFrame(), """
                 Look and feel changed successfully!
 
                 Please reopen the application to see changes""",
@@ -161,7 +151,7 @@ public class DialogUtils {
     }
 
     public static void configHasBeenReset() {
-        JOptionPane.showMessageDialog(null, """
+        JOptionPane.showMessageDialog(FRAME_COMPONENTS.getFrame(), """
                 Config has been reset!
 
                 Please reopen the application to see all""",

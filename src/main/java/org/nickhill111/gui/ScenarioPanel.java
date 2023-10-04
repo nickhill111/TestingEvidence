@@ -1,7 +1,9 @@
 package org.nickhill111.gui;
 
 import static java.util.Objects.nonNull;
+import static org.apache.logging.log4j.util.Strings.isNotEmpty;
 import static org.apache.poi.common.usermodel.PictureType.PNG;
+import static org.nickhill111.data.Icons.PASSED_ICON;
 import static org.nickhill111.model.TabNames.SCENARIO;
 
 import javax.imageio.ImageIO;
@@ -89,10 +91,11 @@ public class ScenarioPanel extends JPanel {
         Component[] components = getComponentsInGbcOrder();
 
         if (components.length != 0) {
-            run.setText(tabValue + ":");
+            String iconValue = getIconValue();
+            run.setText(tabValue + ": " + getIconValueForWord(iconValue));
             run.addBreak();
             run.addBreak();
-            generatedText.append(tabValue).append(":\n\n ");
+            generatedText.append(tabValue).append(": ").append(iconValue).append("\n\n ");
 
             for (Component component : components) {
                 try {
@@ -119,7 +122,9 @@ public class ScenarioPanel extends JPanel {
                             width = 500;
                         }
 
-                        run.addPicture(new FileInputStream(savedPhoto), PNG, savedPhoto.getName(), Units.toEMU(width), Units.toEMU((height)));
+                        FileInputStream fileInputStream = new FileInputStream(savedPhoto);
+                        run.addPicture(fileInputStream, PNG, savedPhoto.getName(), Units.toEMU(width), Units.toEMU((height)));
+                        fileInputStream.close();
                         run.addTab();
                     }
                 } catch (Exception e) {
@@ -129,6 +134,34 @@ public class ScenarioPanel extends JPanel {
         }
 
         return generatedText.toString();
+    }
+
+    private String getIconValueForWord(String iconValue) {
+        if (nonNull(iconValue) && isNotEmpty(iconValue)) {
+            if (iconValue.equals("(/)")) {
+                return "PASSED";
+            }
+
+            return "FAILED";
+        }
+
+        return "";
+    }
+
+    private String getIconValue() {
+        if (getParent().getParent().getParent() instanceof Scenarios scenarios) {
+            Icon icon = scenarios.getIconAt(scenarioNumber - 1);
+
+            if (nonNull(icon)) {
+                if (icon.equals(PASSED_ICON)) {
+                    return "(/)";
+                }
+
+                return "(x)";
+            }
+        }
+
+        return "";
     }
 
     private boolean savePhoto(BufferedImage image, File file) {

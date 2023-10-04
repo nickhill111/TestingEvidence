@@ -24,7 +24,7 @@ public class Photo extends JPanel {
     public Photo(BufferedImage image) {
         this.originalImage = image;
 
-        add(createPicture(image));
+        addPicture(image);
         add(Box.createRigidArea(new Dimension(0, 10)));
         add(new PhotoButtons(image));
         addMouseListener();
@@ -32,12 +32,12 @@ public class Photo extends JPanel {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
     }
 
-    private JLabel createPicture(BufferedImage image) {
+    private void addPicture(BufferedImage image) {
         image = Scalr.resize(image, PHOTO_SIZE);
         JLabel picLabel = new JLabel(new ImageIcon(image));
         picLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        return picLabel;
+        add(picLabel);
     }
 
     private void addMouseListener() {

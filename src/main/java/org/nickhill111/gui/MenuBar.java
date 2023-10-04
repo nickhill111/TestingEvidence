@@ -6,6 +6,8 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.net.URI;
+
 import org.nickhill111.TestingEvidenceApplication;
 import org.nickhill111.data.Config;
 import org.nickhill111.data.FrameComponents;
@@ -23,18 +25,19 @@ public class MenuBar extends JMenuBar {
     private final ScreenshotService screenshotService = new ScreenshotService();
 
     public MenuBar() {
-        add(createFileMenu());
-        add(createFunctionsMenu());
-        add(createPersonalisationMenu());
-        add(createHelpMenu());
+        addFileMenu();
+        addFunctionsMenu();
+        addPersonalisationMenu();
+        addHelpMenu();
     }
 
-    private JMenu createFileMenu() {
+    private void addFileMenu() {
         JMenu fileMenu = new JMenu("File");
 
         JMenuItem newMenuItem = new JMenuItem("New");
         newMenuItem.addActionListener(e -> {
             frameComponents.getFrame().dispose();
+            config.getConfigDetails().setOpenedFolderPath(null);
             new TestingEvidenceApplication();
         });
         newMenuItem.setMnemonic(KeyEvent.VK_N);
@@ -59,17 +62,28 @@ public class MenuBar extends JMenuBar {
         saveAsMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK + InputEvent.SHIFT_DOWN_MASK));
         fileMenu.add(saveAsMenuItem);
 
+        JMenuItem closeMenuItem = new JMenuItem("Close");
+        closeMenuItem.addActionListener(e -> {
+            config.getConfigDetails().setOpenedFolderPath(null);
+            config.saveFrameConfigDetails();
+            System.exit(0);
+        });
+        fileMenu.add(closeMenuItem);
+
         fileMenu.addSeparator();
 
         JMenuItem exitMenuItem = new JMenuItem("Exit");
-        exitMenuItem.addActionListener(e -> System.exit(0));
+        exitMenuItem.addActionListener(e -> {
+            config.saveFrameConfigDetails();
+            System.exit(0);
+        });
         fileMenu.add(exitMenuItem);
 
 
-        return fileMenu;
+        add(fileMenu);
     }
 
-    private JMenu createFunctionsMenu() {
+    private void addFunctionsMenu() {
         JMenu functionsMenu = new JMenu("Functions");
 
         JMenuItem takeScreenshotMenuItem = new JMenuItem("Take Screenshot");
@@ -115,12 +129,20 @@ public class MenuBar extends JMenuBar {
         copyGeneratedTextMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK));
         functionsMenu.add(copyGeneratedTextMenuItem);
 
-        return functionsMenu;
+        add(functionsMenu);
     }
 
-    private JMenu createPersonalisationMenu() {
+    private void addPersonalisationMenu() {
         JMenu personalisationMenu = new JMenu("Personalisation");
 
+        personalisationMenu.add(createLookAndFeelMenu());
+        personalisationMenu.add(createRefreshGuiMenuItem());
+        personalisationMenu.add(createResetConfigMenuItem());
+
+        add(personalisationMenu);
+    }
+
+    private JMenu createLookAndFeelMenu() {
         JMenu lookAndFeelMenu = new JMenu("Look and Feel");
 
         for (UIManager.LookAndFeelInfo installedLookAndFeel : UIManager.getInstalledLookAndFeels()) {
@@ -132,53 +154,105 @@ public class MenuBar extends JMenuBar {
             });
             lookAndFeelMenu.add(lookAndFeelMenuItem);
         }
-        personalisationMenu.add(lookAndFeelMenu);
 
-        JMenuItem resetConfig = new JMenuItem("Reset Config");
-        resetConfig.addActionListener(e -> config.reset());
-        personalisationMenu.add(resetConfig);
-
-        return personalisationMenu;
+        return lookAndFeelMenu;
     }
 
-    private JMenu createHelpMenu() {
+    private JMenuItem createRefreshGuiMenuItem() {
+        JMenuItem refreshGui = new JMenuItem("Refresh GUI");
+        refreshGui.addActionListener(e -> GuiUtils.refreshComponent(frameComponents.getFrame()));
+        refreshGui.setMnemonic(KeyEvent.VK_L);
+        refreshGui.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, InputEvent.CTRL_DOWN_MASK));
+        return refreshGui;
+    }
+
+    private JMenuItem createResetConfigMenuItem() {
+        JMenuItem resetConfig = new JMenuItem("Reset Config");
+        resetConfig.addActionListener(e -> config.reset());
+        return resetConfig;
+    }
+
+    private void addHelpMenu() {
         JMenu helpMenu = new JMenu("Help");
 
+        helpMenu.add(createAboutMenuItem());
+        helpMenu.add(createReportBugMenuItem());
+        helpMenu.add(createHelpMenuItem());
+
+        add(helpMenu);
+    }
+
+    private JMenuItem createAboutMenuItem() {
         JMenuItem aboutMenuItem = new JMenuItem("About");
         aboutMenuItem.addActionListener(e -> {
             JFrame aboutFrame = new JFrame();
+            aboutFrame.setTitle("About");
+
             JLabel aboutTitle = new JLabel("About");
             aboutFrame.add(aboutTitle);
 
-            JLabel aboutDialog = new JLabel("""
-                Using this as a todo section for the moment:
-                
-                Allow the user to choose regression events (solution for if a user wants to use different configs for different tests?)
-                save screen dimensions and position and if full screen
-                add pass/fail icons
-                finish this dialog and the help dialog (need to change this to html)
-                change icon
-                packup into a jar
-                """);
+            JLabel aboutDialog = new JLabel("<html>" +
+                "<h1>About:</h1>" +
+                "<br>" +
+                "Using this as a todo section for the moment:<br>" +
+                "finish this dialog and the help dialog (need to change this to html)<br>" +
+                "change icon<br>" +
+                "Rearrange toolbar<br>" +
+                "update labels to icons<br>" +
+                "pack-up into a jar" +
+                "</html>");
             aboutFrame.add(aboutDialog);
             aboutFrame.pack();
-            GuiUtils.setupGui(aboutFrame);
-        });
-        helpMenu.add(aboutMenuItem);
+            Dimension currentSize = aboutFrame.getSize();
 
+            aboutFrame.setSize(currentSize.width + 20, currentSize.height + 20);
+            GuiUtils.setupGui(aboutFrame);
+            aboutFrame.setResizable(false);
+        });
+
+        return aboutMenuItem;
+    }
+
+    private JMenuItem createReportBugMenuItem() {
+        JMenuItem reportBugMenuItem = new JMenuItem("Report bug");
+        reportBugMenuItem.addActionListener(e -> {
+            try {
+                Desktop.getDesktop().browse(new URI("https://github.com/nickhill111/TestingEvidence/issues/new"));
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+
+        return reportBugMenuItem;
+    }
+
+    private JMenuItem createHelpMenuItem() {
         JMenuItem helpMenuItem = new JMenuItem("Help");
         helpMenuItem.addActionListener(e -> {
             JFrame helpFrame = new JFrame();
+            helpFrame.setTitle("Help");
+
             JLabel helpTitle = new JLabel("Help");
             helpFrame.add(helpTitle);
 
-            JLabel helpDialog = new JLabel("Not completed yet");
+            JLabel helpDialog = new JLabel("<html>" +
+                "<h1>Help:</h1>" +
+                "<br>" +
+                "Please refer to the readme file <a href=\"www.google.com\">here</a>" + //TODO: update url
+                "<br>" +
+                "<br>" +
+                "Alternatively if you cant find an answer there then <br>" +
+                "please reach out to Nicholas Hill on slack" +
+                "</html>");
             helpFrame.add(helpDialog);
             helpFrame.pack();
-            GuiUtils.setupGui(helpFrame);
-        });
-        helpMenu.add(helpMenuItem);
+            Dimension currentSize = helpFrame.getSize();
 
-        return helpMenu;
+            helpFrame.setSize(currentSize.width + 20, currentSize.height + 20);
+            GuiUtils.setupGui(helpFrame);
+            helpFrame.setResizable(false);
+        });
+
+        return helpMenuItem;
     }
 }

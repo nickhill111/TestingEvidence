@@ -6,12 +6,14 @@ import java.util.Arrays;
 import static java.util.Objects.nonNull;
 
 public class FileUtils {
-    public static void deleteEntireFolder(File[] previousFiles) {
+    public static void deleteOldFiles(File[] previousFiles) {
         for (File file : previousFiles) {
-            boolean isFileDeleted = !file.isFile() ? deleteDirectory(file) : file.delete();
+            if (file.exists()) {
+                boolean isFileDeleted = file.isFile() ? file.delete() : deleteDirectory(file);
 
-            if (!isFileDeleted) {
-                DialogUtils.cantDeleteActiveFolder();
+                if (!isFileDeleted) {
+                    DialogUtils.cantDeleteFile(file.getAbsolutePath());
+                }
             }
         }
     }

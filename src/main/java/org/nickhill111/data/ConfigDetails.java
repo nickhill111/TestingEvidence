@@ -25,14 +25,20 @@ import static java.util.Objects.nonNull;
 public class ConfigDetails implements Serializable {
     @JsonProperty("personalisation")
     private Personalisation personalisation;
+    @JsonProperty("frameConfigDetails")
+    private FrameConfigDetails frameConfigDetails;
+    @JsonProperty("previewFrameConfigDetails")
+    private FrameConfigDetails previewFrameConfigDetails;
+    @JsonProperty("previewZoomValue")
+    private Integer previewZoomValue;
     @JsonProperty("fileChooserLocation")
     private String fileChooserLocation;
     @JsonProperty("openedFolderPath")
     private String openedFolderPath;
     @JsonProperty("selectedScreenId")
     private String selectedScreenId;
-    @JsonProperty("selectedZoomIndex")
-    private Integer selectedZoomIndex;
+    @JsonProperty("splitPaneLocation")
+    private Integer splitPaneLocation;
 
     @JsonIgnore
     public Personalisation getPersonalisation() {
@@ -40,6 +46,22 @@ public class ConfigDetails implements Serializable {
             personalisation = new Personalisation();
         }
         return personalisation;
+    }
+
+    @JsonIgnore
+    public FrameConfigDetails getFrameConfigDetails() {
+        if (isNull(frameConfigDetails)) {
+            frameConfigDetails = new FrameConfigDetails();
+        }
+        return frameConfigDetails;
+    }
+
+    @JsonIgnore
+    public FrameConfigDetails getPreviewFrameConfigDetails() {
+        if (isNull(previewFrameConfigDetails)) {
+            previewFrameConfigDetails = new FrameConfigDetails();
+        }
+        return previewFrameConfigDetails;
     }
 
     @JsonIgnore
@@ -69,11 +91,11 @@ public class ConfigDetails implements Serializable {
     }
 
     @JsonIgnore
-    public int getSelectedZoomIndex() {
-        if (isNull(selectedZoomIndex)) {
-            selectedZoomIndex = 2;
+    public Integer getPreviewZoomValue() {
+        if (isNull(previewZoomValue)) {
+            previewZoomValue = 90;
         }
 
-        return selectedZoomIndex;
+        return previewZoomValue;
     }
 }

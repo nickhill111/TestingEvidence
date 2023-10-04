@@ -1,6 +1,5 @@
 package org.nickhill111.gui;
 
-import org.imgscalr.Scalr;
 import org.nickhill111.data.Config;
 import org.nickhill111.data.FrameComponents;
 
@@ -8,113 +7,85 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static org.nickhill111.util.GuiUtils.PHOTO_SIZE;
-import static org.nickhill111.util.GuiUtils.refreshComponent;
+import static org.nickhill111.util.GuiUtils.MEDIUM_FONT;
+import static org.nickhill111.util.GuiUtils.SMALL_FONT;
+import static org.nickhill111.util.GuiUtils.TITLE_FONT;
+import static org.nickhill111.util.GuiUtils.convertZoomValueToScale;
 
 public class PreviewEvidenceToolBar extends JToolBar {
-    private final static String MAX = "Max";
-    private final PreviewEvidenceFrame previewEvidenceFrame;
-    private final JLabel picLabel;
-    private final JComboBox<String> zoomComboBox;
-    private BufferedImage image;
-    private final Config config = Config.getInstance();
+    private final PreviewEvidencePanel picture;
     private final FrameComponents frameComponents = FrameComponents.getInstance();
+    private final Config config = Config.getInstance();
 
-    public PreviewEvidenceToolBar(PreviewEvidenceFrame previewEvidenceFrame, JLabel picLabel, BufferedImage image) {
-        this.previewEvidenceFrame = previewEvidenceFrame;
-        this.image = image;
-        this.picLabel = picLabel;
+    public PreviewEvidenceToolBar(PreviewEvidencePanel picture) {
+        this.picture = picture;
 
         setFloatable(false);
         setPreferredSize(new Dimension(100, 60));
 
-        add(createLeftButton());
-        add(createRightButton());
+        addLeftButton();
+        addRightButton();
         addSeparator();
-        add(createZoomLabel());
-
-        this.zoomComboBox = createZoomComboBox();
-        updateImageSizeAndFrameDimensions(image);
-        add(zoomComboBox);
+        addZoomLabel();
+        addZoomSlider();
     }
 
-    private JButton createLeftButton() {
+    private void addLeftButton() {
         JButton moveButton = new JButton("<");
-        moveButton.setFont(new Font("Arial", Font.BOLD, 60));
+        moveButton.setFont(TITLE_FONT);
         moveButton.setPreferredSize(new Dimension(60, 60));
         addMoveButtonActionListener(moveButton, -1);
 
-        return moveButton;
+        add(moveButton);
     }
 
-    private JButton createRightButton() {
+    private void addRightButton() {
         JButton moveButton = new JButton(">");
-        moveButton.setFont(new Font("Arial", Font.BOLD, 60));
+        moveButton.setFont(TITLE_FONT);
         moveButton.setPreferredSize(new Dimension(60, 60));
         addMoveButtonActionListener(moveButton, 1);
 
-        return moveButton;
+        add(moveButton);
     }
 
     private void addMoveButtonActionListener(JButton moveButton, int locationToMoveBy) {
         moveButton.addActionListener(e -> {
             ScenarioPanel selectedScenario = frameComponents.getUsers().getSelectedScenarios().getSelectedScenario();
 
-            BufferedImage nextImage = selectedScenario.getPhotoNextTo(image, locationToMoveBy);
+            BufferedImage nextImage = selectedScenario.getPhotoNextTo(picture.getImage(), locationToMoveBy);
 
             if (nonNull(nextImage)) {
-                updateImageSizeAndFrameDimensions(nextImage);
-                image = nextImage;
+                picture.setImage(nextImage);
+                picture.setScale(picture.getScale());
             }
         });
     }
 
-    private JLabel createZoomLabel() {
-        return new JLabel("Zoom: ");
+    private void addZoomLabel() {
+        JLabel zoomLabel = new JLabel("Zoom: ");
+        zoomLabel.setFont(MEDIUM_FONT);
+        add(zoomLabel);
     }
 
-    private JComboBox<String> createZoomComboBox() {
-        JComboBox<String> zoomSizesComboBox = new JComboBox<>();
-        zoomSizesComboBox.addItem("1");
-        zoomSizesComboBox.addItem("2");
-        zoomSizesComboBox.addItem("3 (Default)");
-        zoomSizesComboBox.addItem("4");
-        zoomSizesComboBox.addItem("5");
-        zoomSizesComboBox.addItem(MAX);
+    private void addZoomSlider() {
+        JSlider zoomSlider = new JSlider(30, 150, config.getConfigDetails().getPreviewZoomValue());
 
-        zoomSizesComboBox.setSelectedIndex(config.getConfigDetails().getSelectedZoomIndex());
+        zoomSlider.setMajorTickSpacing(10);
+        zoomSlider.setPaintTicks(true);
+        zoomSlider.setPaintLabels(true);
+        zoomSlider.setFont(SMALL_FONT);
 
-        zoomSizesComboBox.addActionListener(e -> updateImageSizeAndFrameDimensions(image));
+        zoomSlider.addChangeListener(e -> {
+            if (!zoomSlider.getValueIsAdjusting()) {
+                zoomSlider.setValue((int) (Math.round(zoomSlider.getValue()/10.0) * 10));
 
-        return zoomSizesComboBox;
-    }
+                picture.setScale(convertZoomValueToScale(zoomSlider.getValue()));
 
-    public void updateImageSizeAndFrameDimensions(BufferedImage imageToUpdate) {
-        String selectedItem = (String) zoomComboBox.getSelectedItem();
-
-        BufferedImage imageToSet = imageToUpdate;
-
-        if (!MAX.equals(selectedItem)) {
-            if (isNull(selectedItem)) {
-                selectedItem = "3";
+                config.getConfigDetails().setPreviewZoomValue(zoomSlider.getValue());
             }
+        });
 
-            int selectedZoom = Integer.parseInt(selectedItem.replace(" (Default)", ""));
-            imageToSet = Scalr.resize(imageToUpdate, PHOTO_SIZE * selectedZoom);
-        }
-
-        picLabel.setIcon(new ImageIcon(imageToSet));
-
-        if (MAX.equals(selectedItem)) {
-            previewEvidenceFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        } else {
-            previewEvidenceFrame.pack();
-        }
-
-        config.getConfigDetails().setSelectedZoomIndex(zoomComboBox.getSelectedIndex());
-        config.saveConfig();
-        refreshComponent(previewEvidenceFrame);
+        add(zoomSlider);
     }
 }

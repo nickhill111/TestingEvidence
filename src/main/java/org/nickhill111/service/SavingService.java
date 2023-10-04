@@ -1,7 +1,8 @@
 package org.nickhill111.service;
 
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static org.nickhill111.util.FileUtils.deleteEntireFolder;
+import static org.nickhill111.util.FileUtils.deleteOldFiles;
 
 import javax.swing.*;
 import java.io.File;
@@ -51,6 +52,12 @@ public class SavingService {
     }
 
     public void saveAllScreenshotsWithFileChooser() {
+        if (!frameComponents.isActiveFolder()) {
+            String ticketNumber = DialogUtils.askForTicketNumber();
+            if (isNull(ticketNumber)) {
+                return;
+            }
+        }
         ConfigDetails configDetails = config.getConfigDetails();
         JFileChooser fileChooser = new JFileChooser(configDetails.getFileChooserLocation());
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -93,7 +100,7 @@ public class SavingService {
         }
 
         if (nonNull(existingFiles)) {
-            deleteEntireFolder(existingFiles);
+            deleteOldFiles(existingFiles);
         }
 
         saveGeneratedTextToFile(folder);
@@ -107,7 +114,7 @@ public class SavingService {
 
         Map<String, List<ScenarioPanel>> allPreviewPanels = frameComponents.getUsers().getAllScenarioPanels();
 
-        ProgressBar progressBar = new ProgressBar(allPreviewPanels.keySet().size());
+        ProgressBar progressBar = new ProgressBar(allPreviewPanels.keySet().size(), frameComponents.getFrame().getGraphicsConfiguration());
 
         for (String userType : allPreviewPanels.keySet()) {
             String textTitle = userType + " testing:";
@@ -148,6 +155,7 @@ public class SavingService {
             FileOutputStream out = new FileOutputStream( new File(folder, frameComponents.getFrame().getTitle() + "-Evidence.docx"));
             document.write(out);
             out.close();
+            document.close();
         } catch (IOException e) {
             DialogUtils.cantSaveGeneratedText(e);
         }

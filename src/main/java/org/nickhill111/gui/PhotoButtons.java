@@ -1,48 +1,63 @@
 package org.nickhill111.gui;
 
+import org.nickhill111.data.Config;
+import org.nickhill111.util.GuiUtils;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
+import static org.nickhill111.data.Icons.PREVIEW_ICON;
+import static org.nickhill111.data.Icons.REMOVE_ICON;
+import static org.nickhill111.util.GuiUtils.MEDIUM_FONT;
+
 public class PhotoButtons extends JPanel {
     private final BufferedImage image;
+    private final Config config = Config.getInstance();
 
     public PhotoButtons(BufferedImage image) {
         this.image = image;
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 
-        add(createMoveLeftButton());
-        add(Box.createRigidArea(new Dimension(5, 0)));
-        add(createRemoveButton());
-        add(Box.createRigidArea(new Dimension(5, 0)));
-        add(createPreviewButton());
-        add(Box.createRigidArea(new Dimension(5, 0)));
-        add(createMoveRightButton());
+        addMoveLeftButton();
+        addBreak();
+        addRemoveButton();
+        addBreak();
+        addPreviewButton();
+        addBreak();
+        addMoveRightButton();
     }
 
-    private JButton createPreviewButton() {
-        JButton previewButton = new JButton("Preview");
-
-        previewButton.addActionListener(e -> new PreviewEvidenceFrame(image));
-
-        return previewButton;
+    private void addBreak() {
+        add(Box.createRigidArea(new Dimension(5, 0)));
     }
 
-    private JButton createMoveLeftButton() {
+    private void addPreviewButton() {
+        JButton previewButton = new JButton(PREVIEW_ICON);
+        previewButton.setToolTipText("Preview Image");
+
+        previewButton.addActionListener(e -> new PreviewEvidenceFrame(image,
+            GuiUtils.getScreen(config.getConfigDetails().getPreviewFrameConfigDetails().getWindowScreenId())));
+
+        add(previewButton);
+    }
+
+    private void addMoveLeftButton() {
         JButton moveButton = new JButton("<");
         addMoveButtonActionListener(moveButton, -1);
 
-        return moveButton;
+        add(moveButton);
     }
 
-    private JButton createMoveRightButton() {
+    private void addMoveRightButton() {
         JButton moveButton = new JButton(">");
         addMoveButtonActionListener(moveButton, 1);
 
-        return moveButton;
+        add(moveButton);
     }
 
     private void addMoveButtonActionListener(JButton moveButton, int movement) {
+        moveButton.setFont(MEDIUM_FONT);
         moveButton.addActionListener(e -> {
             Container previewPanelComp = getParent().getParent();
             Container parentComp = getParent();
@@ -62,8 +77,9 @@ public class PhotoButtons extends JPanel {
         });
     }
 
-    private JButton createRemoveButton() {
-        JButton removeButton = new JButton("Remove");
+    private void addRemoveButton() {
+        JButton removeButton = new JButton(REMOVE_ICON);
+        removeButton.setToolTipText("Delete");
 
         removeButton.addActionListener(e -> {
             Container photoContainer = getParent();
@@ -75,6 +91,6 @@ public class PhotoButtons extends JPanel {
 
         removeButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        return removeButton;
+        add(removeButton);
     }
 }

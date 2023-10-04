@@ -5,12 +5,15 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import org.apache.commons.io.FileUtils;
+import org.nickhill111.data.Config;
 import org.nickhill111.data.FrameComponents;
 import org.nickhill111.util.DialogUtils;
 
+import static java.util.Objects.nonNull;
 import static org.nickhill111.util.GuiUtils.PHOTO_SIZE;
 
 public class MainPanel extends JPanel {
+    Config config = Config.getInstance();
     FrameComponents frameComponents = FrameComponents.getInstance();
 
     public MainPanel() {
@@ -63,5 +66,15 @@ public class MainPanel extends JPanel {
         splitPane.setDividerSize(15);
         splitPane.getLeftComponent().setMinimumSize(new Dimension(PHOTO_SIZE, PHOTO_SIZE));
         splitPane.getRightComponent().setMinimumSize(new Dimension());
+
+        Integer splitPaneLocation = config.getConfigDetails().getSplitPaneLocation();
+        if (nonNull(splitPaneLocation)) {
+            splitPane.setDividerLocation(splitPaneLocation);
+        }
+
+        splitPane.addPropertyChangeListener(e -> {
+            config.getConfigDetails().setSplitPaneLocation(splitPane.getDividerLocation());
+            config.saveConfig();
+        });
     }
 }

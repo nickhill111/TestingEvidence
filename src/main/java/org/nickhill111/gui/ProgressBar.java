@@ -5,14 +5,17 @@ import org.nickhill111.util.GuiUtils;
 import javax.swing.*;
 import java.awt.*;
 
+import static org.nickhill111.util.GuiUtils.MEDIUM_FONT;
+
 public class ProgressBar extends JFrame {
-    JProgressBar progressBar;
-    public ProgressBar(int size) {
+    private final JProgressBar progressBar;
+    public ProgressBar(int size, GraphicsConfiguration graphicsConfiguration) {
+        super(graphicsConfiguration);
         getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
         add(Box.createRigidArea(new Dimension(20,10)));
 
         JLabel savingLabel = new JLabel("Saving Evidence");
-        savingLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        savingLabel.setFont(MEDIUM_FONT);
         savingLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         add(savingLabel);
         add(Box.createRigidArea(new Dimension(20,10)));

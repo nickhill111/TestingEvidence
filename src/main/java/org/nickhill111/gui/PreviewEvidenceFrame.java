@@ -1,31 +1,66 @@
 package org.nickhill111.gui;
 
-import org.imgscalr.Scalr;
+import org.nickhill111.data.Config;
+import org.nickhill111.data.FrameConfigDetails;
 import org.nickhill111.util.GuiUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.image.BufferedImage;
 
-import static org.nickhill111.util.GuiUtils.PHOTO_SIZE;
+import static java.util.Objects.nonNull;
+import static org.nickhill111.util.GuiUtils.convertZoomValueToScale;
 
 public class PreviewEvidenceFrame extends JFrame {
+    private final Config config = Config.getInstance();
 
-    public PreviewEvidenceFrame(BufferedImage image) {
-        JPanel jPanel = new JPanel();
-        BufferedImage scaledImage = Scalr.resize(image, PHOTO_SIZE * 3);
-        JLabel picLabel = new JLabel(new ImageIcon(scaledImage));
-        picLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        jPanel.add(picLabel);
+    public PreviewEvidenceFrame(BufferedImage originalImage, GraphicsConfiguration graphicsConfiguration) {
+        super(graphicsConfiguration);
 
-        add(jPanel);
-        PreviewEvidenceToolBar toolBar = new PreviewEvidenceToolBar(this, picLabel, image);
+        PreviewEvidencePanel previewEvidencePanel = new PreviewEvidencePanel(originalImage,
+            convertZoomValueToScale(config.getConfigDetails().getPreviewZoomValue()));
+
+        add(new JScrollPane(previewEvidencePanel));
+
+        PreviewEvidenceToolBar toolBar = new PreviewEvidenceToolBar(previewEvidencePanel);
         add(toolBar, BorderLayout.PAGE_END);
 
         setTitle("Preview Evidence");
         setAlwaysOnTop(true);
-        pack();
+        FrameConfigDetails frameConfigDetails = config.getConfigDetails().getPreviewFrameConfigDetails();
+
+        Dimension windowSize = frameConfigDetails.getWindowSize();
+
+        if (nonNull(windowSize)) {
+            setSize(windowSize);
+            setExtendedState(frameConfigDetails.getWindowState());
+        }
+
         GuiUtils.setupGui(this);
-        setResizable(false);
+
+        addComponentListener(new ComponentListener() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+            }
+
+            @Override
+            public void componentMoved(ComponentEvent e) {
+            }
+
+            @Override
+            public void componentShown(ComponentEvent e) {
+            }
+
+            @Override
+            public void componentHidden(ComponentEvent e) {
+                FrameConfigDetails frameConfigDetails = config.getConfigDetails().getPreviewFrameConfigDetails();
+                frameConfigDetails.setWindowSize(getSize());
+                frameConfigDetails.setWindowState(getExtendedState());
+                frameConfigDetails.setWindowScreenId(getGraphicsConfiguration().getDevice().getIDstring());
+                config.saveConfig();
+            }
+        });
     }
 }
