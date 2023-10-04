@@ -161,8 +161,8 @@ public class MenuBar extends JMenuBar {
     private JMenuItem createRefreshGuiMenuItem() {
         JMenuItem refreshGui = new JMenuItem("Refresh GUI");
         refreshGui.addActionListener(e -> GuiUtils.refreshComponent(frameComponents.getFrame()));
-        refreshGui.setMnemonic(KeyEvent.VK_L);
-        refreshGui.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, InputEvent.CTRL_DOWN_MASK));
+        refreshGui.setMnemonic(KeyEvent.VK_G);
+        refreshGui.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.CTRL_DOWN_MASK));
         return refreshGui;
     }
 
@@ -238,7 +238,7 @@ public class MenuBar extends JMenuBar {
             JLabel helpDialog = new JLabel("<html>" +
                 "<h1>Help:</h1>" +
                 "<br>" +
-                "Please refer to the readme file <a href=\"www.google.com\">here</a>" + //TODO: update url
+                "Please refer to the readme file <a href=\"https://github.com/nickhill111/TestingEvidence/blob/main/README.md\">here</a>" + //TODO: update url
                 "<br>" +
                 "<br>" +
                 "Alternatively if you cant find an answer there then <br>" +
