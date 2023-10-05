@@ -7,6 +7,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+
+import org.nickhill111.data.Config;
 import org.nickhill111.data.FrameComponents;
 import org.nickhill111.gui.Users;
 
@@ -55,7 +57,7 @@ public class DialogUtils {
         String userType = JOptionPane.showInputDialog("Enter user type please");
 
         userType = checkValidFileName(userType);
-        
+
         return validateUserType(userType);
     }
 
@@ -113,17 +115,17 @@ public class DialogUtils {
     }
 
     public static void cantAddTabUnderRegression() {
-        JOptionPane.showMessageDialog(FRAME_COMPONENTS.getFrame(), "Cant create a Scenario in the regression tab",
+        JOptionPane.showMessageDialog(FRAME_COMPONENTS.getFrame(), "Can't create a Scenario in the regression tab",
             "Can't add Scenario", JOptionPane.ERROR_MESSAGE);
     }
 
     public static void cantSaveGeneratedText(IOException e) {
-        JOptionPane.showMessageDialog(FRAME_COMPONENTS.getFrame(), "Cant save generated text to file: \n\n" + e.getMessage(),
+        JOptionPane.showMessageDialog(FRAME_COMPONENTS.getFrame(), "Can't save generated text to file: \n\n" + e.getMessage(),
             "Can't save generated text", JOptionPane.ERROR_MESSAGE);
     }
 
     public static void cantReadGeneratedTextFile(File generatedTextFile) {
-        JOptionPane.showMessageDialog(FRAME_COMPONENTS.getFrame(), "Cant read from generated text file: " + generatedTextFile.getAbsolutePath(),
+        JOptionPane.showMessageDialog(FRAME_COMPONENTS.getFrame(), "Can't read from generated text file: " + generatedTextFile.getAbsolutePath(),
             "Can't read file", JOptionPane.ERROR_MESSAGE);
     }
 
@@ -134,12 +136,12 @@ public class DialogUtils {
 
     public static void cantCreateConfig() {
         JOptionPane.showMessageDialog(FRAME_COMPONENTS.getFrame(), "Unable to create the config!",
-            "Cant create config", JOptionPane.ERROR_MESSAGE);
+            "Can't create config", JOptionPane.ERROR_MESSAGE);
     }
 
     public static void cantSaveConfig() {
         JOptionPane.showMessageDialog(FRAME_COMPONENTS.getFrame(), "Unable to save the config!\n\nPlease go to preferences -> reset config to amend",
-            "Cant save config", JOptionPane.ERROR_MESSAGE);
+            "Can't save config", JOptionPane.ERROR_MESSAGE);
     }
 
     public static void lookAndFeelChangedSuccessfully() {
@@ -154,7 +156,13 @@ public class DialogUtils {
         JOptionPane.showMessageDialog(FRAME_COMPONENTS.getFrame(), """
                 Config has been reset!
 
-                Please reopen the application to see all""",
+                Please reopen the application to see all changes""",
             "Config reset", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    public static void cantDeleteConfig() {
+        JOptionPane.showMessageDialog(FRAME_COMPONENTS.getFrame(), "Can't delete the config! please go and delete it manually at:\n" +
+                Config.CONFIG_FOLDER.getAbsolutePath(),
+            "Can't delete config", JOptionPane.ERROR_MESSAGE);
     }
 }

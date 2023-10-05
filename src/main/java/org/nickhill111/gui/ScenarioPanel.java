@@ -94,11 +94,14 @@ public class ScenarioPanel extends JPanel {
             if (getParent().getParent().getParent() instanceof Scenarios scenarios) {
                 Icon icon = scenarios.getIconAt(scenarioNumber - 1);
                 PassFailIcons passFailIcons = PassFailIcons.getValueFromIcon(icon);
+
+                String wordDocumentValue = "";
                 if (nonNull(passFailIcons)) {
                     generatedText.append(passFailIcons.getGeneratedTextValue());
-                    run.setText(tabValue + ": " + passFailIcons.getGeneratedWordDocumentValue());
+                    wordDocumentValue = passFailIcons.getGeneratedWordDocumentValue();
                 }
 
+                run.setText(tabValue + ": " + wordDocumentValue);
             }
 
             run.addBreak();
@@ -139,6 +142,9 @@ public class ScenarioPanel extends JPanel {
                     throw new Exception(e.getMessage() +"\n\n Please delete and re-add all evidence under " + tabValue);
                 }
             }
+
+            run.addBreak();
+            run.addBreak();
         }
 
         return generatedText.toString();

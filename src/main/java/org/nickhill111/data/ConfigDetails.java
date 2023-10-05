@@ -98,4 +98,13 @@ public class ConfigDetails implements Serializable {
 
         return previewZoomValue;
     }
+
+    @JsonIgnore
+    public Integer getSplitPaneLocation() {
+        if (isNull(splitPaneLocation)) {
+            splitPaneLocation = 1000;
+        }
+
+        return splitPaneLocation;
+    }
 }

@@ -20,7 +20,7 @@ public class FrameConfigDetails {
     @JsonProperty("windowSize")
     private Dimension windowSize;
     @JsonProperty("windowState")
-    private int windowState;
+    private Integer windowState;
     @JsonProperty("windowScreenId")
     private String windowScreenId;
 }

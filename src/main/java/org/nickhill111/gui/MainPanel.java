@@ -9,13 +9,11 @@ import org.nickhill111.data.Config;
 import org.nickhill111.data.FrameComponents;
 import org.nickhill111.util.DialogUtils;
 
-import static java.util.Objects.nonNull;
 import static org.nickhill111.util.FileUtils.GENERATED_TEXT_FILE_NAME;
 import static org.nickhill111.util.GuiUtils.PHOTO_SIZE;
 
 public class MainPanel extends JPanel {
-    Config config = Config.getInstance();
-    FrameComponents frameComponents = FrameComponents.getInstance();
+    private final Config config = Config.getInstance();
 
     public MainPanel() {
         setLayout(new BorderLayout());
@@ -37,6 +35,7 @@ public class MainPanel extends JPanel {
         generatedTextArea.setEditable(false);
         textAreaPanel.add(generatedTextArea, BorderLayout.CENTER);
 
+        FrameComponents frameComponents = FrameComponents.getInstance();
         frameComponents.setGeneratedTextArea(generatedTextArea);
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, users, textAreaPanel);
@@ -65,13 +64,10 @@ public class MainPanel extends JPanel {
         splitPane.setContinuousLayout(true);
         splitPane.setOneTouchExpandable(true);
         splitPane.setDividerSize(15);
-        splitPane.getLeftComponent().setMinimumSize(new Dimension(PHOTO_SIZE, PHOTO_SIZE));
+        splitPane.getLeftComponent().setMinimumSize(new Dimension(PHOTO_SIZE + 50, PHOTO_SIZE + 50));
         splitPane.getRightComponent().setMinimumSize(new Dimension());
 
-        Integer splitPaneLocation = config.getConfigDetails().getSplitPaneLocation();
-        if (nonNull(splitPaneLocation)) {
-            splitPane.setDividerLocation(splitPaneLocation);
-        }
+        splitPane.setDividerLocation(config.getConfigDetails().getSplitPaneLocation());
 
         splitPane.addPropertyChangeListener(e -> {
             config.getConfigDetails().setSplitPaneLocation(splitPane.getDividerLocation());

@@ -238,7 +238,7 @@ public class MenuBar extends JMenuBar {
                 "Please refer to the readme file <a href=\"https://github.com/nickhill111/TestingEvidence/blob/main/README.md\">here</a>" +
                 "<br>" +
                 "<br>" +
-                "Alternatively if you cant find an answer there then <br>" +
+                "Alternatively if you can't find an answer there then <br>" +
                 "please reach out to Nicholas Hill on slack" +
                 "</html>");
             helpFrame.add(helpDialog);

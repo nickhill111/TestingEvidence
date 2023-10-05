@@ -8,6 +8,12 @@ jar {
                 'Main-Class': 'org.nickhill111.TestingEvidenceApplication'
         )
     }
+
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+    from {
+        configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
 
 java {
@@ -16,8 +22,8 @@ java {
     }
 }
 
-group 'org.example'
-version '1.0-SNAPSHOT'
+group 'org.nickhill111'
+version '1.0'
 
 repositories {
     mavenCentral()
@@ -31,17 +37,15 @@ dependencies {
     annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.28'
 
     implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.20.0'
+    implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.2.3'
 
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.15.2'
-
 
     implementation group: 'commons-io', name: 'commons-io', version: '2.7'
 
     implementation group: 'org.imgscalr', name: 'imgscalr-lib', version: '4.2'
 
     implementation group: 'lc.kra.system', name: 'system-hook', version: '3.8'
-
-    implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.2.3'
 }
 
 test {

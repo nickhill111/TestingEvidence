@@ -23,7 +23,7 @@ public class FileUtils {
         }
     }
 
-    private static boolean deleteDirectory(File directoryToBeDeleted) {
+    public static boolean deleteDirectory(File directoryToBeDeleted) {
         File[] allContents = directoryToBeDeleted.listFiles();
 
         if (nonNull(allContents)) {

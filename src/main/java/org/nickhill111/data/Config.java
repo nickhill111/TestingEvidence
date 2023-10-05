@@ -5,9 +5,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.nickhill111.util.DialogUtils;
+import org.nickhill111.util.FileUtils;
 
 import javax.swing.*;
 import java.io.BufferedWriter;
@@ -29,7 +31,7 @@ public class Config {
 
     private static final String CONFIG_NAME = ".testingEvidence";
     private static final File CONFIG_PARENT_FILE = new File(System.getProperty("user.home"));
-    private static final File CONFIG_FOLDER = new File(CONFIG_PARENT_FILE, CONFIG_NAME);
+    public static final File CONFIG_FOLDER = new File(CONFIG_PARENT_FILE, CONFIG_NAME);
     private static final File CONFIG_FILE = new File(CONFIG_FOLDER, CONFIG_NAME + ".txt");
 
     private ConfigDetails configDetails = readConfigDetails();
@@ -63,7 +65,15 @@ public class Config {
 
             return readConfigDetails;
         } catch (Exception e) {
-            e.printStackTrace();
+            if (e.getClass().equals(MismatchedInputException.class)) {
+                if (FileUtils.deleteDirectory(CONFIG_FOLDER)) {
+                    DialogUtils.configHasBeenReset();
+                } else {
+                    DialogUtils.cantDeleteConfig();
+                }
+            } else {
+                e.printStackTrace();
+            }
         }
 
         return new ConfigDetails();

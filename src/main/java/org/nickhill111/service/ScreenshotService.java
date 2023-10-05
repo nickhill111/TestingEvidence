@@ -15,7 +15,7 @@ import org.nickhill111.util.DialogUtils;
 import org.nickhill111.util.GuiUtils;
 
 public class ScreenshotService {
-    FrameComponents frameComponents = FrameComponents.getInstance();
+    private final FrameComponents frameComponents = FrameComponents.getInstance();
 
     public void takeAndAddScreenshot() {
         BufferedImage screenshot = takeScreenshot();

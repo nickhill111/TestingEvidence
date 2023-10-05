@@ -23,7 +23,11 @@ public class MainFrame extends JFrame implements ComponentListener {
     private final ScreenshotService screenshotService = new ScreenshotService();
     public MainFrame(GraphicsConfiguration screen, File folderToOpenFrom) {
         super(screen);
-        setLocation(screen.getBounds().getLocation());
+        if (nonNull(screen)) {
+            setLocation(screen.getBounds().getLocation());
+        }
+
+        addComponentListener(this);
 
         frameComponents.setFrame(this);
         if (nonNull(folderToOpenFrom)) {
