@@ -227,6 +227,28 @@ public class ScenarioPanel extends JPanel {
         return null;
     }
 
+    public BufferedImage getPhotoAt(int location) {
+        Photo startPhoto = getPhotoWithGridxPosition(location);
+
+        if (nonNull(startPhoto)) {
+            return startPhoto.getOriginalImage();
+        }
+
+        return null;
+    }
+
+    public BufferedImage getLastPhoto() {
+        Component[] components = getComponentsInGbcOrder();
+
+        Component lastComponent = components[components.length - 1];
+
+        if (lastComponent instanceof Photo photo) {
+            return photo.getOriginalImage();
+        }
+
+        return null;
+    }
+
     public BufferedImage getPhotoNextTo(BufferedImage image, int locationToMoveBy) {
         Component[] components = getComponentsInGbcOrder();
 

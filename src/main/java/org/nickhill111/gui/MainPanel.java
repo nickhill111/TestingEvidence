@@ -33,6 +33,7 @@ public class MainPanel extends JPanel {
 
         TextArea generatedTextArea = new TextArea(generatedText);
         generatedTextArea.setEditable(false);
+        generatedTextArea.setFont(new Font("Arial", Font.PLAIN, 18));
         textAreaPanel.add(generatedTextArea, BorderLayout.CENTER);
 
         FrameComponents frameComponents = FrameComponents.getInstance();

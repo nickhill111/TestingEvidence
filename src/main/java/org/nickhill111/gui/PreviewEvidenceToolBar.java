@@ -27,16 +27,41 @@ public class PreviewEvidenceToolBar extends JToolBar {
         setFloatable(false);
         setPreferredSize(new Dimension(100, 60));
 
+        addToStartButton();
+        addSeparator();
         addLeftButton();
+        addSeparator();
         addRightButton();
+        addSeparator();
+        addToEndButton();
         addSeparator();
         addZoomLabel();
         addZoomSlider();
     }
 
+    private void addToStartButton() {
+        JButton toStartButton = new JButton("<<");
+        toStartButton.setFont(TITLE_FONT);
+        toStartButton.setToolTipText("Skip to first image");
+        toStartButton.setPreferredSize(new Dimension(100, 60));
+        toStartButton.addActionListener(e -> {
+            ScenarioPanel selectedScenario = frameComponents.getUsers().getSelectedScenarios().getSelectedScenario();
+
+            BufferedImage nextImage = selectedScenario.getPhotoAt(0);
+
+            if (nonNull(nextImage)) {
+                picture.setImage(nextImage);
+                picture.setScale(picture.getScale());
+            }
+        });
+
+        add(toStartButton);
+    }
+
     private void addLeftButton() {
         JButton moveButton = new JButton("<");
         moveButton.setFont(TITLE_FONT);
+        moveButton.setToolTipText("Previous image");
         moveButton.setPreferredSize(new Dimension(60, 60));
         addMoveButtonActionListener(moveButton, -1);
 
@@ -46,6 +71,7 @@ public class PreviewEvidenceToolBar extends JToolBar {
     private void addRightButton() {
         JButton moveButton = new JButton(">");
         moveButton.setFont(TITLE_FONT);
+        moveButton.setToolTipText("Next image");
         moveButton.setPreferredSize(new Dimension(60, 60));
         addMoveButtonActionListener(moveButton, 1);
 
@@ -63,6 +89,25 @@ public class PreviewEvidenceToolBar extends JToolBar {
                 picture.setScale(picture.getScale());
             }
         });
+    }
+
+    private void addToEndButton() {
+        JButton toEndButton = new JButton(">>");
+        toEndButton.setFont(TITLE_FONT);
+        toEndButton.setToolTipText("Skip to last image");
+        toEndButton.setPreferredSize(new Dimension(100, 60));
+        toEndButton.addActionListener(e -> {
+            ScenarioPanel selectedScenario = frameComponents.getUsers().getSelectedScenarios().getSelectedScenario();
+
+            BufferedImage nextImage = selectedScenario.getLastPhoto();
+
+            if (nonNull(nextImage)) {
+                picture.setImage(nextImage);
+                picture.setScale(picture.getScale());
+            }
+        });
+
+        add(toEndButton);
     }
 
     private void addZoomLabel() {
