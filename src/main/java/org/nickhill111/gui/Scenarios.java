@@ -72,9 +72,13 @@ public class Scenarios extends JTabbedPane implements MouseListener {
             selectNewComponent(scrollPane);
 
             if (nonNull(generatedScenarioLines)) {
-                String generatedTextValue = generatedScenarioLines.split(title + ":")[1].trim().split(System.lineSeparator())[0];
+                try {
+                    String generatedTextValue = generatedScenarioLines.split(title + ":")[1].trim().split(System.lineSeparator())[0];
 
-                tryToSetIconAt(i - 1, generatedTextValue);
+                    tryToSetIconAt(i - 1, generatedTextValue);
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
