@@ -8,6 +8,8 @@ import org.nickhill111.taskManager.data.Tasks;
 
 import javax.swing.*;
 
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static org.apache.logging.log4j.util.Strings.isNotEmpty;
 import static org.nickhill111.common.data.Icons.ADD_ICON;
 import static org.nickhill111.common.data.Icons.DELETE_ICON;
@@ -53,30 +55,48 @@ public class TaskToolBar extends JToolBar {
         JButton removeButton = new JButton(DELETE_ICON);
         removeButton.setToolTipText("Remove selected task");
 
-        removeButton.addActionListener(e -> {
+        removeButton.addActionListener(event -> {
             JList<String> taskList = taskManagerComponents.getTaskList();
             int[] selectedIndices = taskList.getSelectedIndices();
 
-            taskManagerComponents.setRemovingTask(true);
-            for (int i = selectedIndices.length - 1; i >= 0; i--) {
-                int selectedIndex = selectedIndices[i];
+            if (selectedIndices.length >= 1) {
+                Tasks tasks = config.getConfigDetails().getTaskManagerConfigDetails().getTasks();
+                DefaultListModel<String> demoList = taskManagerComponents.getDemoList();
 
-                if (selectedIndex >= 0) {
-                    DefaultListModel<String> demoList = taskManagerComponents.getDemoList();
-                    config.getConfigDetails().getTaskManagerConfigDetails().getTasks().remove(selectedIndex);
+                taskManagerComponents.setRemovingTask(true);
+                for (int i = selectedIndices.length - 1; i >= 0; i--) {
+                    int selectedIndex = selectedIndices[i];
 
-                    demoList.removeElementAt(selectedIndex);
+                    if (selectedIndex >= 0) {
+                        tasks.remove(selectedIndex);
 
-                    if (demoList.getSize() > selectedIndex) {
-                        taskList.setSelectedIndex(selectedIndex);
-                    } else if (selectedIndex >= 1) {
-                        taskList.setSelectedIndex(selectedIndex - 1);
+                        for (int e = selectedIndex + 1; e <= tasks.size(); e++) {
+                            Task task = tasks.get(e);
+
+                            if (nonNull(task)) {
+                                tasks.remove(e);
+                                tasks.put(e - 1, task);
+                            }
+                        }
+
+                        demoList.removeElementAt(selectedIndex);
+
+                        if (demoList.getSize() > selectedIndex) {
+                            taskList.setSelectedIndex(selectedIndex);
+                        } else if (selectedIndex >= 1) {
+                            taskList.setSelectedIndex(selectedIndex - 1);
+                        }
                     }
                 }
+
+                JTextArea infoTextArea = taskManagerComponents.getInfoTextArea();
+                Task task = tasks.get(taskList.getSelectedIndex());
+                infoTextArea.setText(isNull(task) ? null : task.taskText());
+
+                taskManagerComponents.setRemovingTask(false);
+                config.saveConfig();
             }
 
-            taskManagerComponents.setRemovingTask(false);
-            config.saveConfig();
         });
 
         add(removeButton);

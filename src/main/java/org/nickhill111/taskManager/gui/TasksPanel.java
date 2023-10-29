@@ -11,6 +11,7 @@ import javax.swing.border.BevelBorder;
 import java.awt.*;
 import java.util.List;
 
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 public class TasksPanel extends JPanel {
@@ -48,8 +49,8 @@ public class TasksPanel extends JPanel {
                     config.saveConfig();
                 }
 
-                infoTextArea.setText(tasks.get(selectedIndex).taskText());
-
+                Task task = tasks.get(taskList.getSelectedIndex());
+                infoTextArea.setText(isNull(task) ? null : task.taskText());
                 infoTextArea.setEditable(nonNull(selectedValue));
             }
 
