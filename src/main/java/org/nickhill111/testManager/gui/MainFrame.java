@@ -53,7 +53,7 @@ public class MainFrame extends JFrame implements ComponentListener {
         GuiUtils.setupGui(this);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-        config.saveConfig();
+        config.saveConfigDetails();
 
         if (nonNull(folderToOpenFrom) && folderToOpenFrom.exists()) {
             setTitle(folderToOpenFrom.getName());

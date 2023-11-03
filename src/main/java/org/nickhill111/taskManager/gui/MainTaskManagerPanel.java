@@ -22,11 +22,10 @@ public class MainTaskManagerPanel extends JPanel {
     }
 
     private void addTaskAndInfoSplitPanel() {
-        TasksPanel tasksPanel = new TasksPanel();
         InfoPanel infoPanel = new InfoPanel();
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-            new GenericScrollPane<>(tasksPanel),
+            new TasksTabbedPane(),
             new GenericScrollPane<>(infoPanel));
         setUpSplitPane(splitPane);
 

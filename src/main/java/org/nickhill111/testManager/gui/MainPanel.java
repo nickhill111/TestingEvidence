@@ -73,7 +73,7 @@ public class MainPanel extends JPanel {
 
         splitPane.addPropertyChangeListener(e -> {
             config.getConfigDetails().getTestManagerConfigDetails().setSplitPaneLocation(splitPane.getDividerLocation());
-            config.saveConfig();
+            config.saveConfigDetails();
         });
     }
 }

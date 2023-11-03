@@ -1,4 +1,6 @@
 package org.nickhill111.taskManager.data;
 
-public record Task(String taskName, String taskText) {
+import java.time.LocalDate;
+
+public record Task(String taskName, String priority, LocalDate dateCreated, String taskText) {
 }

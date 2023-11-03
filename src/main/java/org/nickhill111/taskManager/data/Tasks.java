@@ -1,11 +1,8 @@
 package org.nickhill111.taskManager.data;
 
-import java.util.HashMap;
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import java.util.LinkedList;
 
-public class Tasks extends HashMap<Integer, Task> {
-
-    public List<String> getAllTaskNames() {
-        return values().stream().map(Task::taskName).toList();
-    }
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class Tasks extends LinkedList<Task> {
 }

@@ -9,8 +9,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
-
 import static java.util.Objects.isNull;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -19,7 +17,7 @@ import static java.util.Objects.isNull;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @AllArgsConstructor
 @NoArgsConstructor
-public class ConfigDetails implements Serializable {
+public class ConfigDetails implements Configuration {
     @JsonProperty("globalConfigDetails")
     private GlobalConfigDetails globalConfigDetails;
     @JsonProperty("testManagerConfigDetails")

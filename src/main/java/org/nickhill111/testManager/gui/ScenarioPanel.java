@@ -17,6 +17,7 @@ import java.util.List;
 import lombok.SneakyThrows;
 import org.apache.poi.util.Units;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
+import org.nickhill111.common.gui.GenericScrollPane;
 import org.nickhill111.testManager.model.PassFailIcons;
 import org.nickhill111.testManager.model.RegressionTab;
 import org.nickhill111.testManager.service.ScreenshotService;
@@ -62,6 +63,10 @@ public class ScenarioPanel extends JPanel {
     public void addEvidence(BufferedImage screenshot) {
         constraints.gridx = getComponentCount();
         add(new Photo(screenshot), constraints);
+
+        if (nonNull(getParent()) && getParent().getParent() instanceof GenericScrollPane<?> scrollPane) {
+            scrollPane.scrollToTheRight();
+        }
     }
 
     public String getTabValue() {
@@ -81,6 +86,10 @@ public class ScenarioPanel extends JPanel {
         return components;
     }
 
+    private int getTabIndex() {
+        return Math.abs(scenarioNumber) - 1;
+    }
+
     @SneakyThrows
     public String saveAllEvidence(String userType, File folder, XWPFRun run) {
         String tabValue = getTabValue();
@@ -92,7 +101,8 @@ public class ScenarioPanel extends JPanel {
         if (components.length != 0) {
             generatedText.append(tabValue).append(": ");
             if (getParent().getParent().getParent() instanceof Scenarios scenarios) {
-                Icon icon = scenarios.getIconAt(scenarioNumber - 1);
+                int scenarioIndex = getTabIndex();
+                Icon icon = scenarios.getIconAt(scenarioIndex);
                 PassFailIcons passFailIcons = PassFailIcons.getValueFromIcon(icon);
 
                 String wordDocumentValue = "";

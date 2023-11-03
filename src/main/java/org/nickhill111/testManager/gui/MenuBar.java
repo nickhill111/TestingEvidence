@@ -6,7 +6,6 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-import java.net.URI;
 
 import org.nickhill111.testManager.TestingEvidenceApplication;
 import org.nickhill111.common.data.Config;
@@ -14,9 +13,13 @@ import org.nickhill111.testManager.data.TestManagerComponents;
 import org.nickhill111.testManager.service.SavingService;
 import org.nickhill111.testManager.service.ScreenshotService;
 import org.nickhill111.common.util.DialogUtils;
-import org.nickhill111.common.util.GuiUtils;
 
 import static org.nickhill111.common.util.GuiUtils.addNewScenarioTab;
+import static org.nickhill111.common.util.MenuUtils.createExitMenuItem;
+import static org.nickhill111.common.util.MenuUtils.createFileMenu;
+import static org.nickhill111.common.util.MenuUtils.createFunctionMenu;
+import static org.nickhill111.common.util.MenuUtils.createHelpMenu;
+import static org.nickhill111.common.util.MenuUtils.createPersonalisationMenu;
 
 public class MenuBar extends JMenuBar {
     private final TestManagerComponents testManagerComponents = TestManagerComponents.getInstance();
@@ -32,7 +35,7 @@ public class MenuBar extends JMenuBar {
     }
 
     private void addFileMenu() {
-        JMenu fileMenu = new JMenu("File");
+        JMenu fileMenu = createFileMenu();
 
         JMenuItem newMenuItem = new JMenuItem("New");
         newMenuItem.addActionListener(e -> {
@@ -72,19 +75,14 @@ public class MenuBar extends JMenuBar {
 
         fileMenu.addSeparator();
 
-        JMenuItem exitMenuItem = new JMenuItem("Exit");
-        exitMenuItem.addActionListener(e -> {
-            config.saveTestManagerFrameConfigDetails();
-            System.exit(0);
-        });
-        fileMenu.add(exitMenuItem);
+        fileMenu.add(createExitMenuItem());
 
 
         add(fileMenu);
     }
 
     private void addFunctionsMenu() {
-        JMenu functionsMenu = new JMenu("Functions");
+        JMenu functionsMenu = createFunctionMenu();
 
         JMenuItem takeScreenshotMenuItem = new JMenuItem("Take Screenshot");
         takeScreenshotMenuItem.addActionListener(e -> screenshotService.takeAndAddScreenshot());
@@ -133,123 +131,10 @@ public class MenuBar extends JMenuBar {
     }
 
     private void addPersonalisationMenu() {
-        JMenu personalisationMenu = new JMenu("Personalisation");
-
-        personalisationMenu.add(createLookAndFeelMenu());
-        personalisationMenu.add(createRefreshGuiMenuItem());
-        personalisationMenu.add(createResetConfigMenuItem());
-
-        add(personalisationMenu);
-    }
-
-    private JMenu createLookAndFeelMenu() {
-        JMenu lookAndFeelMenu = new JMenu("Look and Feel");
-
-        for (UIManager.LookAndFeelInfo installedLookAndFeel : UIManager.getInstalledLookAndFeels()) {
-            JMenuItem lookAndFeelMenuItem = new JMenuItem(installedLookAndFeel.getName());
-            lookAndFeelMenuItem.addActionListener(e -> {
-                config.getConfigDetails().getGlobalConfigDetails().getPersonalisation().setLookAndFeel(installedLookAndFeel.getClassName());
-                config.saveConfig();
-                DialogUtils.lookAndFeelChangedSuccessfully();
-            });
-            lookAndFeelMenu.add(lookAndFeelMenuItem);
-        }
-
-        return lookAndFeelMenu;
-    }
-
-    private JMenuItem createRefreshGuiMenuItem() {
-        JMenuItem refreshGui = new JMenuItem("Refresh GUI");
-        refreshGui.addActionListener(e -> GuiUtils.refreshComponent(testManagerComponents.getFrame()));
-        refreshGui.setMnemonic(KeyEvent.VK_G);
-        refreshGui.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.CTRL_DOWN_MASK));
-        return refreshGui;
-    }
-
-    private JMenuItem createResetConfigMenuItem() {
-        JMenuItem resetConfig = new JMenuItem("Reset Config");
-        resetConfig.addActionListener(e -> config.reset());
-        return resetConfig;
+        add(createPersonalisationMenu(testManagerComponents.getFrame()));
     }
 
     private void addHelpMenu() {
-        JMenu helpMenu = new JMenu("Help");
-
-        helpMenu.add(createAboutMenuItem());
-        helpMenu.add(createReportBugMenuItem());
-        helpMenu.add(createHelpMenuItem());
-
-        add(helpMenu);
-    }
-
-    private JMenuItem createAboutMenuItem() {
-        JMenuItem aboutMenuItem = new JMenuItem("About");
-        aboutMenuItem.addActionListener(e -> {
-            JFrame aboutFrame = new JFrame();
-            aboutFrame.setTitle("About");
-
-            JLabel aboutTitle = new JLabel("About");
-            aboutFrame.add(aboutTitle);
-
-            JLabel aboutDialog = new JLabel("<html>" +
-                "<h1>About:</h1>" +
-                "<br>" +
-                "Using this as a todo section for the moment:<br>" +
-                "finish this dialog and the help dialog (need to change this to html)<br>" +
-                "pack-up into a jar" +
-                "</html>");
-            aboutFrame.add(aboutDialog);
-            aboutFrame.pack();
-            Dimension currentSize = aboutFrame.getSize();
-
-            aboutFrame.setSize(currentSize.width + 20, currentSize.height + 20);
-            GuiUtils.setupGui(aboutFrame);
-            aboutFrame.setResizable(false);
-        });
-
-        return aboutMenuItem;
-    }
-
-    private JMenuItem createReportBugMenuItem() {
-        JMenuItem reportBugMenuItem = new JMenuItem("Report bug");
-        reportBugMenuItem.addActionListener(e -> {
-            try {
-                Desktop.getDesktop().browse(new URI("https://github.com/nickhill111/TestingEvidence/issues/new"));
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
-            }
-        });
-
-        return reportBugMenuItem;
-    }
-
-    private JMenuItem createHelpMenuItem() {
-        JMenuItem helpMenuItem = new JMenuItem("Help");
-        helpMenuItem.addActionListener(e -> {
-            JFrame helpFrame = new JFrame();
-            helpFrame.setTitle("Help");
-
-            JLabel helpTitle = new JLabel("Help");
-            helpFrame.add(helpTitle);
-
-            JLabel helpDialog = new JLabel("<html>" +
-                "<h1>Help:</h1>" +
-                "<br>" +
-                "Please refer to the readme file <a href=\"https://github.com/nickhill111/TestingEvidence/blob/main/README.md\">here</a>" +
-                "<br>" +
-                "<br>" +
-                "Alternatively if you can't find an answer there then <br>" +
-                "please reach out to Nicholas Hill on slack" +
-                "</html>");
-            helpFrame.add(helpDialog);
-            helpFrame.pack();
-            Dimension currentSize = helpFrame.getSize();
-
-            helpFrame.setSize(currentSize.width + 20, currentSize.height + 20);
-            GuiUtils.setupGui(helpFrame);
-            helpFrame.setResizable(false);
-        });
-
-        return helpMenuItem;
+        add(createHelpMenu());
     }
 }

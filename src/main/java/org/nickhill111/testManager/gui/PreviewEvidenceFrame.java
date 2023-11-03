@@ -65,7 +65,7 @@ public class PreviewEvidenceFrame extends JFrame implements ComponentListener, M
         frameConfigDetails.setWindowSize(getSize());
         frameConfigDetails.setWindowState(getExtendedState());
         frameConfigDetails.setWindowScreenId(getGraphicsConfiguration().getDevice().getIDstring());
-        config.saveConfig();
+        config.saveConfigDetails();
     }
 
     @Override

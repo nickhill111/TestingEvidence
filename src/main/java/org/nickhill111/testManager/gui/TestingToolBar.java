@@ -51,6 +51,8 @@ public class TestingToolBar extends JToolBar {
 
     private void addScreenSelection() {
         screenSelection = new JComboBox<>();
+        screenSelection.setFont(MEDIUM_FONT);
+
         GraphicsDevice[] screens = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
         String selectedScreenId = config.getConfigDetails().getTestManagerConfigDetails().getSelectedScreenId();
         for (GraphicsDevice screen : screens) {
@@ -65,7 +67,7 @@ public class TestingToolBar extends JToolBar {
             GraphicsDevice graphicsDevice = (GraphicsDevice) screenSelection.getSelectedItem();
             if (nonNull(graphicsDevice)) {
                 config.getConfigDetails().getTestManagerConfigDetails().setSelectedScreenId(graphicsDevice.getIDstring());
-                config.saveConfig();
+                config.saveConfigDetails();
             }
         });
 

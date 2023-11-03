@@ -3,6 +3,8 @@ package org.nickhill111.taskManager.data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.nickhill111.taskManager.gui.TaskTable;
+import org.nickhill111.taskManager.gui.TasksTabbedPane;
 
 import javax.swing.*;
 
@@ -12,11 +14,12 @@ import javax.swing.*;
 public class TaskManagerComponents {
     private static TaskManagerComponents INSTANCE;
 
-    private DefaultListModel<String> demoList;
-    private JList<String> taskList;
+    private TasksTabbedPane tasksTabbedPane;
+    private TaskTable currentTaskTable;
+    private TaskTable completedTaskTable;
     private JTextArea infoTextArea;
+    private JTextField filter;
     private JFrame frame;
-    private boolean isRemovingTask = false;
 
     public static TaskManagerComponents getInstance() {
         if (INSTANCE == null) {

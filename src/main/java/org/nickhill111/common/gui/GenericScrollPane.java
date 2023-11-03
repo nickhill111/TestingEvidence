@@ -15,4 +15,9 @@ public class GenericScrollPane<T extends JPanel> extends JScrollPane {
         setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
     }
+
+    public void scrollToTheRight() {
+        JScrollBar scrollBar = getHorizontalScrollBar();
+        scrollBar.setValue(scrollBar.getMaximum());
+    }
 }

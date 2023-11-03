@@ -74,7 +74,7 @@ public class SavingService {
             saveScreenshots(folderToSave);
 
             configDetails.getTestManagerConfigDetails().setFileChooserLocation(folderToSave.getAbsolutePath());
-            config.saveConfig();
+            config.saveConfigDetails();
         } else {
             testManagerComponents.getFrame().setTitle(previousTitle);
         }
@@ -190,7 +190,7 @@ public class SavingService {
 
             configDetails.setOpenedFolderPath(folderToOpen.getAbsolutePath());
             configDetails.setFileChooserLocation(folderToOpen.getParentFile().getAbsolutePath());
-            config.saveConfig();
+            config.saveConfigDetails();
 
             testManagerComponents.getFrame().dispose();
             new TestingEvidenceApplication(folderToOpen);

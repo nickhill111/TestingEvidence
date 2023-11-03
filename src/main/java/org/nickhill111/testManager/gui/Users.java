@@ -106,6 +106,7 @@ public class Users extends JTabbedPane implements MouseListener {
         } else {
             Scenarios scenarios = new Scenarios(files, true);
 
+            //TODO add in icons
             insertTab(REGRESSION.getValue(), null, scenarios, null, 0);
             setSelectedComponent(scenarios);
 

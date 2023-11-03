@@ -36,6 +36,8 @@ public class TaskManagerFrame extends JFrame implements ComponentListener {
             setExtendedState(frameConfigDetails.getWindowState());
         }
 
+        setJMenuBar(new TaskMenuBar());
+
         setTitle("Task Manager");
         GuiUtils.setupGui(this);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
