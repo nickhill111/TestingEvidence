@@ -18,8 +18,6 @@ public class PriorityRenderer extends JComboBox<String> implements TableCellRend
             setSelectedItem(comboBox.getSelectedItem());
         }
 
-        setBackground(isSelected ? table.getSelectionBackground() : table.getSelectionForeground());
-
         return this;
     }
 }

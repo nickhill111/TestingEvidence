@@ -1,8 +1,15 @@
 package org.nickhill111.common.util;
 
+import com.formdev.flatlaf.FlatDarculaLaf;
+import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.FlatIntelliJLaf;
+import com.formdev.flatlaf.FlatLightLaf;
+import com.formdev.flatlaf.themes.FlatMacDarkLaf;
+import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import org.nickhill111.common.data.Config;
 import org.nickhill111.testManager.data.TestManagerComponents;
 import org.nickhill111.common.data.Personalisation;
+import org.nickhill111.testManager.gui.PreviewEvidenceFrame;
 import org.nickhill111.testManager.gui.Scenarios;
 
 import javax.swing.*;
@@ -20,9 +27,19 @@ public class GuiUtils {
     public static final Font MEDIUM_FONT = getFont(24);
     public static final Font SMALL_FONT = getFont(14);
 
+    private static final TestManagerComponents testManagerComponents = TestManagerComponents.getInstance();
+    private static final Config config = Config.getInstance();
+
     public static void setLookAndFeel() {
+        FlatLightLaf.installLafInfo();
+        FlatDarkLaf.installLafInfo();
+        FlatIntelliJLaf.installLafInfo();
+        FlatDarculaLaf.installLafInfo();
+        FlatMacLightLaf.installLafInfo();
+        FlatMacDarkLaf.installLafInfo();
+
         try {
-            Personalisation personalisation = Config.getInstance().getConfigDetails().getGlobalConfigDetails().getPersonalisation();
+            Personalisation personalisation = config.getConfigDetails().getGlobalConfigDetails().getPersonalisation();
             if (isEmpty(personalisation.getLookAndFeel())) {
                 personalisation.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             }
@@ -55,12 +72,17 @@ public class GuiUtils {
     }
 
     public static void addNewScenarioTab() {
-        Scenarios selectedScenarios = TestManagerComponents.getInstance().getUsers().getSelectedScenarios();
+        Scenarios selectedScenarios = testManagerComponents.getUsers().getSelectedScenarios();
         if (nonNull(selectedScenarios)) {
             selectedScenarios.addEmptyTab();
         } else {
             DialogUtils.cantTakeScreenshotDialog(new Exception("No users created!"));
         }
+    }
+
+    public static void previewSelectedScenario() {
+        new PreviewEvidenceFrame(testManagerComponents.getUsers().getSelectedScenarios().getSelectedScenario().getPhotoAt(0),
+            GuiUtils.getScreen(config.getConfigDetails().getTestManagerConfigDetails().getPreviewFrameConfigDetails().getWindowScreenId()));
     }
 
     public static GraphicsConfiguration getScreen(String windowScreenId) {

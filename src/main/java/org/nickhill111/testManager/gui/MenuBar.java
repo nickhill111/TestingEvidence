@@ -15,6 +15,7 @@ import org.nickhill111.testManager.service.ScreenshotService;
 import org.nickhill111.common.util.DialogUtils;
 
 import static org.nickhill111.common.util.GuiUtils.addNewScenarioTab;
+import static org.nickhill111.common.util.GuiUtils.previewSelectedScenario;
 import static org.nickhill111.common.util.MenuUtils.createExitMenuItem;
 import static org.nickhill111.common.util.MenuUtils.createFileMenu;
 import static org.nickhill111.common.util.MenuUtils.createFunctionMenu;
@@ -110,6 +111,12 @@ public class MenuBar extends JMenuBar {
         addRegressionMenuItem.setMnemonic(KeyEvent.VK_R);
         addRegressionMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_DOWN_MASK));
         functionsMenu.add(addRegressionMenuItem);
+
+        JMenuItem previewSelectedScenarioMenuItem = new JMenuItem("Preview Selected Scenario");
+        previewSelectedScenarioMenuItem.addActionListener(e -> previewSelectedScenario());
+        previewSelectedScenarioMenuItem.setMnemonic(KeyEvent.VK_P);
+        previewSelectedScenarioMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.CTRL_DOWN_MASK));
+        functionsMenu.add(previewSelectedScenarioMenuItem);
 
         JMenuItem changeTicketNumberMenuItem = new JMenuItem("Change Ticket Number");
         changeTicketNumberMenuItem.addActionListener(e -> DialogUtils.askForTicketNumber());

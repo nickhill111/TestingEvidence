@@ -27,8 +27,6 @@ public class PriorityCellEditor extends AbstractCellEditor implements TableCellE
         priorityComboBox.setSelectedItem(selectedPriority.getSelectedItem());
         priorityComboBox.addActionListener(this);
 
-        priorityComboBox.setBackground(isSelected ? table.getSelectionBackground() : table.getSelectionForeground());
-
         return priorityComboBox;
     }
 

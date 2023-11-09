@@ -10,6 +10,7 @@ import static org.nickhill111.testManager.model.TabNames.SCENARIO;
 
 public class FileUtils {
     public final static String GENERATED_TEXT_FILE_NAME = "GeneratedText.txt";
+    public final static String ICON_CONFIGURATION_FILE_NAME = "IconConfiguration.txt";
 
     public static void deleteOldFiles(File[] previousFiles) {
         for (File file : previousFiles) {

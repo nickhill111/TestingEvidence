@@ -2,7 +2,9 @@ package org.nickhill111.testManager.gui;
 
 import org.nickhill111.common.data.Config;
 import org.nickhill111.common.data.FrameConfigDetails;
+import org.nickhill111.common.gui.GenericScrollPane;
 import org.nickhill111.common.util.GuiUtils;
+import org.nickhill111.testManager.data.TestManagerComponents;
 
 import javax.swing.*;
 import java.awt.*;
@@ -28,9 +30,10 @@ public class PreviewEvidenceFrame extends JFrame implements ComponentListener, M
 
         this.previewEvidencePanel = new PreviewEvidencePanel(originalImage,
             convertZoomValueToScale(config.getConfigDetails().getTestManagerConfigDetails().getPreviewZoomValue()));
-        add(new JScrollPane(previewEvidencePanel));
+        add(new GenericScrollPane<>(previewEvidencePanel));
 
-        this.toolBar = new PreviewEvidenceToolBar(previewEvidencePanel);
+        ScenarioPanel selectedScenario = TestManagerComponents.getInstance().getUsers().getSelectedScenarios().getSelectedScenario();
+        this.toolBar = new PreviewEvidenceToolBar(selectedScenario, previewEvidencePanel);
         add(toolBar, BorderLayout.PAGE_END);
 
         setTitle("Preview Evidence");

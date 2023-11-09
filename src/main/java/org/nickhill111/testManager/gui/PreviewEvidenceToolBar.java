@@ -21,32 +21,30 @@ public class PreviewEvidenceToolBar extends JToolBar {
     private final TestManagerComponents testManagerComponents = TestManagerComponents.getInstance();
     private final Config config = Config.getInstance();
 
-    public PreviewEvidenceToolBar(PreviewEvidencePanel picture) {
+    public PreviewEvidenceToolBar(ScenarioPanel selectedScenario, PreviewEvidencePanel picture) {
         this.picture = picture;
 
         setFloatable(false);
         setPreferredSize(new Dimension(100, 60));
 
-        addToStartButton();
+        addToStartButton(selectedScenario);
         addSeparator();
-        addLeftButton();
+        addLeftButton(selectedScenario);
         addSeparator();
-        addRightButton();
+        addRightButton(selectedScenario);
         addSeparator();
-        addToEndButton();
+        addToEndButton(selectedScenario);
         addSeparator();
         addZoomLabel();
         addZoomSlider();
     }
 
-    private void addToStartButton() {
+    private void addToStartButton(ScenarioPanel selectedScenario) {
         JButton toStartButton = new JButton("<<");
         toStartButton.setFont(TITLE_FONT);
         toStartButton.setToolTipText("Skip to first image");
         toStartButton.setPreferredSize(new Dimension(100, 60));
         toStartButton.addActionListener(e -> {
-            ScenarioPanel selectedScenario = testManagerComponents.getUsers().getSelectedScenarios().getSelectedScenario();
-
             BufferedImage nextImage = selectedScenario.getPhotoAt(0);
 
             if (nonNull(nextImage)) {
@@ -58,29 +56,28 @@ public class PreviewEvidenceToolBar extends JToolBar {
         add(toStartButton);
     }
 
-    private void addLeftButton() {
+    private void addLeftButton(ScenarioPanel selectedScenario) {
         JButton moveButton = new JButton("<");
         moveButton.setFont(TITLE_FONT);
         moveButton.setToolTipText("Previous image");
         moveButton.setPreferredSize(new Dimension(60, 60));
-        addMoveButtonActionListener(moveButton, -1);
+        addMoveButtonActionListener(selectedScenario, moveButton, -1);
 
         add(moveButton);
     }
 
-    private void addRightButton() {
+    private void addRightButton(ScenarioPanel selectedScenario) {
         JButton moveButton = new JButton(">");
         moveButton.setFont(TITLE_FONT);
         moveButton.setToolTipText("Next image");
         moveButton.setPreferredSize(new Dimension(60, 60));
-        addMoveButtonActionListener(moveButton, 1);
+        addMoveButtonActionListener(selectedScenario, moveButton, 1);
 
         add(moveButton);
     }
 
-    private void addMoveButtonActionListener(JButton moveButton, int locationToMoveBy) {
+    private void addMoveButtonActionListener(ScenarioPanel selectedScenario, JButton moveButton, int locationToMoveBy) {
         moveButton.addActionListener(e -> {
-            ScenarioPanel selectedScenario = testManagerComponents.getUsers().getSelectedScenarios().getSelectedScenario();
 
             BufferedImage nextImage = selectedScenario.getPhotoNextTo(picture.getImage(), locationToMoveBy);
 
@@ -91,13 +88,12 @@ public class PreviewEvidenceToolBar extends JToolBar {
         });
     }
 
-    private void addToEndButton() {
+    private void addToEndButton(ScenarioPanel selectedScenario) {
         JButton toEndButton = new JButton(">>");
         toEndButton.setFont(TITLE_FONT);
         toEndButton.setToolTipText("Skip to last image");
         toEndButton.setPreferredSize(new Dimension(100, 60));
         toEndButton.addActionListener(e -> {
-            ScenarioPanel selectedScenario = testManagerComponents.getUsers().getSelectedScenarios().getSelectedScenario();
 
             BufferedImage nextImage = selectedScenario.getLastPhoto();
 

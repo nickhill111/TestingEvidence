@@ -20,7 +20,7 @@ public class FunctionsService {
 
         if (isNotEmpty(newTaskName)) {
             TaskTableModel tableModel = taskManagerComponents.getCurrentTaskTable().getModel();
-            tableModel.addRow(newTaskName, MEDIUM.getValue(), LocalDate.now(), "");
+            tableModel.addRow(newTaskName, MEDIUM.getValue(), false, LocalDate.now(), "");
             taskManagerComponents.getCurrentTaskTable().selectRow(tableModel.getRowCount() - 1);
             taskManagerComponents.getTasksTabbedPane().setSelectedIndex(0);
         }
@@ -45,7 +45,9 @@ public class FunctionsService {
 
                 if (selectedRow >= 0) {
                     if (isCurrentTasks) {
-                        taskManagerComponents.getCompletedTaskTable().getModel().addRow(taskTable.getTaskName(selectedRow), taskTable.getPriority(selectedRow), taskTable.getDateCreated(selectedRow), taskTable.getText(selectedRow));
+                        taskManagerComponents.getCompletedTaskTable().getModel().addRow(taskTable.getTaskName(selectedRow),
+                            taskTable.getPriority(selectedRow), taskTable.getIsBlocked(selectedRow),
+                            taskTable.getDateCreated(selectedRow), taskTable.getText(selectedRow));
                     }
 
                     tableModel.removeRow(selectedRow);

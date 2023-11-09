@@ -139,7 +139,7 @@ public class Config {
         }
     }
 
-    private void saveConfigAfterCheck(Configuration configuration, File file) {
+    public void saveConfigAfterCheck(Configuration configuration, File file) {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         ObjectWriter ow = objectMapper.writer().withDefaultPrettyPrinter();

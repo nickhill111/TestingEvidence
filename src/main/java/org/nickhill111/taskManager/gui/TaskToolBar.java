@@ -39,7 +39,7 @@ public class TaskToolBar extends JToolBar {
         taskFilterLabel.setFont(MEDIUM_FONT);
         add(taskFilterLabel);
 
-        JTextField filter = new JTextField(20);
+        JTextField filter = new JTextField(40);
         filter.setFont(MEDIUM_FONT);
         filter.getDocument().addDocumentListener(new DocumentListener() {
             @Override

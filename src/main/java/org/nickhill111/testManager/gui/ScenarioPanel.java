@@ -18,6 +18,8 @@ import lombok.SneakyThrows;
 import org.apache.poi.util.Units;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.nickhill111.common.gui.GenericScrollPane;
+import org.nickhill111.testManager.data.IconsData;
+import org.nickhill111.testManager.data.ScenarioIconData;
 import org.nickhill111.testManager.model.PassFailIcons;
 import org.nickhill111.testManager.model.RegressionTab;
 import org.nickhill111.testManager.service.ScreenshotService;
@@ -91,7 +93,7 @@ public class ScenarioPanel extends JPanel {
     }
 
     @SneakyThrows
-    public String saveAllEvidence(String userType, File folder, XWPFRun run) {
+    public String saveAllEvidence(String userType, File folder, XWPFRun run, List<ScenarioIconData> iconsDataList) {
         String tabValue = getTabValue();
 
         StringBuilder generatedText = new StringBuilder();
@@ -107,8 +109,11 @@ public class ScenarioPanel extends JPanel {
 
                 String wordDocumentValue = "";
                 if (nonNull(passFailIcons)) {
+                    ScenarioIconData scenarioIconData = new ScenarioIconData(tabValue, passFailIcons.getGeneratedTextValue());
                     generatedText.append(passFailIcons.getGeneratedTextValue());
                     wordDocumentValue = passFailIcons.getGeneratedWordDocumentValue();
+
+                    iconsDataList.add(scenarioIconData);
                 }
 
                 run.setText(tabValue + ": " + wordDocumentValue);

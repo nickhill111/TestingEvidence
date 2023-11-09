@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.nickhill111.common.data.Config;
+import org.nickhill111.testManager.data.IconsData;
 import org.nickhill111.testManager.data.TestManagerComponents;
 import org.nickhill111.common.util.DialogUtils;
 import org.nickhill111.common.util.GuiUtils;
@@ -61,7 +62,6 @@ public class Users extends JTabbedPane implements MouseListener {
 
     private void addTab(String userType, List<File> files) {
         if (nonNull(userType)) {
-
             if (REGRESSION.getValue().equals(userType)) {
                 addRegressionTab(files);
                 return;
@@ -106,7 +106,6 @@ public class Users extends JTabbedPane implements MouseListener {
         } else {
             Scenarios scenarios = new Scenarios(files, true);
 
-            //TODO add in icons
             insertTab(REGRESSION.getValue(), null, scenarios, null, 0);
             setSelectedComponent(scenarios);
 

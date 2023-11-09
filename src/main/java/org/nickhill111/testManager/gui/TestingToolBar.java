@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 
 import org.nickhill111.common.data.Config;
+import org.nickhill111.common.util.GuiUtils;
 import org.nickhill111.testManager.data.TestManagerComponents;
 import org.nickhill111.testManager.service.SavingService;
 import org.nickhill111.testManager.service.ScreenshotService;
@@ -11,10 +12,12 @@ import org.nickhill111.testManager.service.ScreenshotService;
 import static java.util.Objects.nonNull;
 import static org.nickhill111.common.data.Icons.ADD_SCENARIO_ICON;
 import static org.nickhill111.common.data.Icons.ADD_USER_ICON;
+import static org.nickhill111.common.data.Icons.PREVIEW_ICON;
 import static org.nickhill111.common.data.Icons.SAVE_ICON;
 import static org.nickhill111.common.data.Icons.SCREENSHOT_ICON;
 import static org.nickhill111.common.util.GuiUtils.MEDIUM_FONT;
 import static org.nickhill111.common.util.GuiUtils.addNewScenarioTab;
+import static org.nickhill111.common.util.GuiUtils.previewSelectedScenario;
 
 public class TestingToolBar extends JToolBar {
     private final Config config = Config.getInstance();
@@ -27,6 +30,7 @@ public class TestingToolBar extends JToolBar {
         addScreenshotButton();
         addUserButton();
         addAddScenarioButton();
+        addPreviewButton();
         addSaveButton();
         addSeparator();
         addScreenLabel();
@@ -88,6 +92,14 @@ public class TestingToolBar extends JToolBar {
         addScenarioButton.addActionListener(e -> addNewScenarioTab());
 
         add(addScenarioButton);
+    }
+
+    private void addPreviewButton() {
+        JButton previewButton = new JButton(PREVIEW_ICON);
+        previewButton.setToolTipText("Preview selected scenario");
+        previewButton.addActionListener(e -> previewSelectedScenario());
+
+        add(previewButton);
     }
 
     private void addSaveButton() {

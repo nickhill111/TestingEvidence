@@ -3,6 +3,7 @@ package org.nickhill111.testManager.service;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.nickhill111.common.util.FileUtils.GENERATED_TEXT_FILE_NAME;
+import static org.nickhill111.common.util.FileUtils.ICON_CONFIGURATION_FILE_NAME;
 import static org.nickhill111.common.util.FileUtils.deleteOldFiles;
 
 import javax.swing.*;
@@ -10,6 +11,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.io.FileUtils;
@@ -20,6 +22,8 @@ import org.nickhill111.common.data.TestManagerConfigDetails;
 import org.nickhill111.testManager.TestingEvidenceApplication;
 import org.nickhill111.common.data.Config;
 import org.nickhill111.common.data.ConfigDetails;
+import org.nickhill111.testManager.data.IconsData;
+import org.nickhill111.testManager.data.ScenarioIconData;
 import org.nickhill111.testManager.data.TestManagerComponents;
 import org.nickhill111.testManager.gui.ProgressBar;
 import org.nickhill111.testManager.gui.ScenarioPanel;
@@ -88,16 +92,16 @@ public class SavingService {
         File[] existingFiles = folder.listFiles();
 
         testManagerComponents.getFrame().setTitle(folder.getName());
+        IconsData iconsData = new IconsData();
 
         if (folder.exists() || folder.mkdirs()) {
             config.getConfigDetails().getTestManagerConfigDetails().setOpenedFolderPath(folder.getAbsolutePath());
 
-            generateTextAndScreenshots(folder);
+            generateTextAndScreenshots(folder, iconsData);
 
             DialogUtils.screenshotsSavedDialog(folder);
         } else {
             DialogUtils.cantSaveDialog(new Exception("Unable to create folder"));
-
             return;
         }
 
@@ -106,11 +110,12 @@ public class SavingService {
         }
 
         saveGeneratedTextToFile(folder);
+        saveIconConfigurationToFile(folder, iconsData);
 
         config.getConfigDetails().getTestManagerConfigDetails().setOpenedFolderPath(folder.getAbsolutePath());
     }
 
-    private void generateTextAndScreenshots(File folder) {
+    private void generateTextAndScreenshots(File folder, IconsData iconsData) {
         document = new XWPFDocument();
         StringBuilder generatedText = new StringBuilder();
 
@@ -129,10 +134,11 @@ public class SavingService {
 
             generatedText.append(textTitle).append("\n\n");
             List<ScenarioPanel> scenarioPanels = allPreviewPanels.get(userType);
+            List<ScenarioIconData> scenarioIconDataList = new LinkedList<>();
 
             for (ScenarioPanel scenarioPanel : scenarioPanels) {
                 XWPFRun scenarioRun = paragraph.createRun();
-                String generatedTextForScenario = scenarioPanel.saveAllEvidence(userType, folder, scenarioRun);
+                String generatedTextForScenario = scenarioPanel.saveAllEvidence(userType, folder, scenarioRun, scenarioIconDataList);
 
                 if (nonNull(generatedTextForScenario)) {
                     generatedText.append(generatedTextForScenario).append("\n\n");
@@ -142,12 +148,20 @@ public class SavingService {
                 }
             }
 
+            if (!scenarioIconDataList.isEmpty()) {
+                iconsData.put(userType, scenarioIconDataList);
+            }
+
             progressBar.incrementValue();
         }
 
         progressBar.dispose();
 
         testManagerComponents.getGeneratedTextArea().setText(generatedText.toString());
+    }
+
+    private void saveIconConfigurationToFile(File folder, IconsData iconsData) {
+        config.saveConfigAfterCheck(iconsData, new File(folder, ICON_CONFIGURATION_FILE_NAME));
     }
 
     private void saveGeneratedTextToFile(File folder) {

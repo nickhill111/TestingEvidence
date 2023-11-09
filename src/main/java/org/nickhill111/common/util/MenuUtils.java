@@ -93,7 +93,6 @@ public class MenuUtils {
                 "<br>" +
                 "Using this as a todo section for the moment:<br>" +
                 "finish this dialog and the help dialog (need to change this to html)<br>" +
-                "pack-up into a jar" +
                 "</html>");
             aboutFrame.add(aboutDialog);
             aboutFrame.pack();

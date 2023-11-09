@@ -4,20 +4,23 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.nickhill111.common.data.Icons.FAILED_ICON;
 import static org.nickhill111.common.data.Icons.PASSED_ICON;
+import static org.nickhill111.common.util.FileUtils.ICON_CONFIGURATION_FILE_NAME;
 import static org.nickhill111.testManager.model.PassFailIcons.getValueFromGeneratedTextValue;
 import static org.nickhill111.testManager.model.TabNames.REGRESSION;
 import static org.nickhill111.testManager.model.TabNames.SCENARIO;
-import static org.nickhill111.common.util.FileUtils.GENERATED_TEXT_FILE_NAME;
-import static org.nickhill111.common.util.FileUtils.getScenariosFromFile;
 
 import javax.swing.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
+import java.io.FileInputStream;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.nickhill111.common.gui.GenericScrollPane;
+import org.nickhill111.testManager.data.IconsData;
+import org.nickhill111.testManager.data.ScenarioIconData;
 import org.nickhill111.testManager.data.TestManagerComponents;
 import org.nickhill111.testManager.model.PassFailIcons;
 import org.nickhill111.testManager.model.RegressionTab;
@@ -28,35 +31,35 @@ public class Scenarios extends JTabbedPane implements MouseListener {
     private final TestManagerComponents testManagerComponents = TestManagerComponents.getInstance();
 
     public Scenarios(List<File> files) {
-        addScenarioTab(files);
+        IconsData iconsData = getIconsData(files);
+        addScenarioTab(files, iconsData);
         addMouseListener(this);
     }
 
     public Scenarios(List<File> files, boolean isRegression) {
+        IconsData iconsData = getIconsData(files);
         if (isRegression) {
-            addRegressionTabs(files);
+            addRegressionTabs(files, iconsData);
         } else {
-            addScenarioTab(files);
+            addScenarioTab(files, iconsData);
         }
         addMouseListener(this);
     }
 
-    private void addScenarioTab(List<File> files) {
+    private void addScenarioTab(List<File> files, IconsData iconsData) {
         if (isNull(files) || files.isEmpty()) {
             addNewEmptyTab();
         } else {
-            addPopulatedTab(files);
+            addPopulatedTab(files, iconsData);
         }
     }
 
-    private void addPopulatedTab(List<File> files) {
+    private void addPopulatedTab(List<File> files, IconsData iconsData) {
         File lastFile = files.get(files.size() -1);
         String[] lastFileNameSplit = lastFile.getName().split("_");
 
         String userType = lastFileNameSplit[0];
         int lastFileNumber = Integer.parseInt(lastFileNameSplit[2]);
-
-        String generatedScenarioLines = getScenariosFromFile(new File(lastFile.getParentFile(), GENERATED_TEXT_FILE_NAME));
 
         for (int i = 1; i <= lastFileNumber; i++) {
             int finalI = i;
@@ -69,27 +72,15 @@ public class Scenarios extends JTabbedPane implements MouseListener {
 
             String title = SCENARIO.getValue() + "_" + i;
 
-            addTab(title, scrollPane);
+            Icon icon = getIconFromConfiguration(iconsData.get(userType), title);
+
+            if (nonNull(icon)) {
+                addTab(title, icon, scrollPane);
+            } else {
+                addTab(title, scrollPane);
+            }
 
             selectNewComponent(scrollPane);
-
-            if (nonNull(generatedScenarioLines)) {
-                try {
-                    String generatedTextValue = generatedScenarioLines.split(title + ":")[1].trim().split(System.lineSeparator())[0];
-
-                    tryToSetIconAt(i - 1, generatedTextValue);
-                } catch(Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
-    private void tryToSetIconAt(int index, String generatedTextValue) {
-        PassFailIcons passFailIcons = getValueFromGeneratedTextValue(generatedTextValue.trim());
-
-        if (nonNull(passFailIcons)) {
-            setIconAt(index, passFailIcons.getIcon());
         }
     }
 
@@ -114,11 +105,11 @@ public class Scenarios extends JTabbedPane implements MouseListener {
         selectNewComponent(scrollPane);
     }
 
-    private void addRegressionTabs(List<File> files) {
+    private void addRegressionTabs(List<File> files, IconsData iconsData) {
         if (isNull(files) || files.isEmpty()) {
             addEmptyRegressionTabs();
         } else {
-            addPopulatedRegressionTabs(files);
+            addPopulatedRegressionTabs(files, iconsData.get(REGRESSION.getValue()));
         }
     }
 
@@ -132,7 +123,50 @@ public class Scenarios extends JTabbedPane implements MouseListener {
         }
     }
 
-    private void addPopulatedRegressionTabs(List<File> files) {
+    private IconsData getIconsData(List<File> files) {
+        return getIconsData(files.get(0).getParentFile());
+    }
+
+    private IconsData getIconsData(File parentFile) {
+        File iconsConfigFile = new File(parentFile, ICON_CONFIGURATION_FILE_NAME);
+
+        if (iconsConfigFile.exists() && iconsConfigFile.isFile()) {
+            try {
+                FileInputStream fileInputStream = new FileInputStream(iconsConfigFile);
+
+                ObjectMapper objectMapper = new ObjectMapper();
+                objectMapper.findAndRegisterModules();
+                IconsData iconsData = objectMapper.readValue(fileInputStream, IconsData.class);
+                fileInputStream.close();
+
+                return iconsData;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return new IconsData();
+    }
+
+    private Icon getIconFromConfiguration(List<ScenarioIconData> scenarioNames, String scenarioName) {
+        if (nonNull(scenarioNames)) {
+            String regressionIconValue = scenarioNames.stream()
+                .filter(value -> scenarioName.equals(value.scenarioName()))
+                .map(ScenarioIconData::icon)
+                .findFirst().orElse(null);
+
+            if (nonNull(regressionIconValue)) {
+                PassFailIcons icon = getValueFromGeneratedTextValue(regressionIconValue);
+
+                if (nonNull(icon)) {
+                    return icon.getIcon();
+                }
+            }
+        }
+        return null;
+    }
+
+    private void addPopulatedRegressionTabs(List<File> files, List<ScenarioIconData> regressionIcons) {
         for (RegressionTab regressionTab : RegressionTab.values()) {
             List<File> filesForTab = files.stream()
                 .filter(file -> file.getName().contains(regressionTab.getValue() + "_"))
@@ -142,7 +176,15 @@ public class Scenarios extends JTabbedPane implements MouseListener {
 
             GenericScrollPane<ScenarioPanel> scrollPane = new GenericScrollPane<>(scenarioPanel);
 
-            addTab(regressionTab.getValue(), scrollPane);
+            String tabName = regressionTab.getValue();
+
+            Icon icon = getIconFromConfiguration(regressionIcons, tabName);
+
+            if (nonNull(icon)) {
+                addTab(tabName, icon, scrollPane);
+            } else {
+                addTab(tabName, scrollPane);
+            }
 
             selectNewComponent(scrollPane);
         }
