@@ -176,12 +176,6 @@ public class DialogUtils {
         return ticketNumber;
     }
 
-    public static void cantMoveTasks() {
-        JOptionPane.showMessageDialog(FRAME_COMPONENTS.getFrame(), "Can't move the tasks up or down as you have selected multiple.\n" +
-                "Please just select one task to move at a time",
-            "Can't move tasks", JOptionPane.ERROR_MESSAGE);
-    }
-
     public static void cantMoveTasksDueToFilter() {
         JOptionPane.showMessageDialog(FRAME_COMPONENTS.getFrame(), "Can't move the tasks up or down as you have filtered the list.\n" +
                 "Please remove the filter",

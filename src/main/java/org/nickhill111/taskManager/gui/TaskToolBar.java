@@ -34,50 +34,6 @@ public class TaskToolBar extends JToolBar {
         addFilter();
     }
 
-    private void addFilter() {
-        JLabel taskFilterLabel = new JLabel("Task Filter:  ");
-        taskFilterLabel.setFont(MEDIUM_FONT);
-        add(taskFilterLabel);
-
-        JTextField filter = new JTextField(40);
-        filter.setFont(MEDIUM_FONT);
-        filter.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                updateList();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                updateList();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                updateList();
-            }
-
-            private void updateList() {
-                filterTable(taskManagerComponents.getCurrentTaskTable());
-                filterTable(taskManagerComponents.getCompletedTaskTable());
-
-
-                taskManagerComponents.getInfoTextArea().setText("");
-                taskManagerComponents.getInfoTextArea().setEditable(false);
-            }
-
-            private void filterTable(TaskTable taskTable) {
-                TableRowSorter<TableModel> sorter = new TableRowSorter<>(taskTable.getModel());
-                sorter.setRowFilter(RowFilter.regexFilter("(?i)" + filter.getText()));
-
-                taskTable.setRowSorter(sorter);
-            }
-        });
-        add(filter);
-
-        taskManagerComponents.setFilter(filter);
-    }
-
     private void addAddButton() {
         JButton addButton = new JButton(ADD_ICON);
         addButton.setToolTipText("Add task to list");
@@ -89,7 +45,7 @@ public class TaskToolBar extends JToolBar {
     private void addRemoveButton() {
         JButton removeButton = new JButton(DELETE_ICON);
         removeButton.setToolTipText("Remove selected tasks");
-        removeButton.addActionListener(event -> functionsService.removeTasks());
+        removeButton.addActionListener(event -> functionsService.removeTask());
 
         add(removeButton);
     }
@@ -116,5 +72,45 @@ public class TaskToolBar extends JToolBar {
         saveButton.addActionListener(e -> config.saveTaskList());
 
         add(saveButton);
+    }
+
+    private void addFilter() {
+        JLabel taskFilterLabel = new JLabel("Task Filter:  ");
+        taskFilterLabel.setFont(MEDIUM_FONT);
+        add(taskFilterLabel);
+
+        JTextField filter = new JTextField(40);
+        filter.setFont(MEDIUM_FONT);
+        filter.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                updateList();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                updateList();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                updateList();
+            }
+
+            private void updateList() {
+                filterTable(taskManagerComponents.getCurrentTaskTable());
+                filterTable(taskManagerComponents.getCompletedTaskTable());
+            }
+
+            private void filterTable(TaskTable taskTable) {
+                TableRowSorter<TableModel> sorter = new TableRowSorter<>(taskTable.getModel());
+                sorter.setRowFilter(RowFilter.regexFilter("(?i)" + filter.getText()));
+
+                taskTable.setRowSorter(sorter);
+            }
+        });
+        add(filter);
+
+        taskManagerComponents.setFilter(filter);
     }
 }

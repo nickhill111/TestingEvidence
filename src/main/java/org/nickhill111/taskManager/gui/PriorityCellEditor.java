@@ -10,15 +10,15 @@ import java.awt.event.ActionListener;
 
 public class PriorityCellEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
 
-    private JComboBox<?> selectedPriority;
+    private ComboBox selectedPriority;
 
     @Override
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-        if (value instanceof JComboBox<?> priorityValue) {
+        if (value instanceof ComboBox priorityValue) {
             this.selectedPriority = priorityValue;
         }
 
-        JComboBox<String> priorityComboBox = new JComboBox<>();
+        ComboBox priorityComboBox = new ComboBox();
 
         for (String priority : Priority.getAllValues()) {
             priorityComboBox.addItem(priority);
@@ -37,7 +37,7 @@ public class PriorityCellEditor extends AbstractCellEditor implements TableCellE
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() instanceof JComboBox<?> priorityComboBox) {
+        if (e.getSource() instanceof ComboBox priorityComboBox) {
             this.selectedPriority = priorityComboBox;
         }
     }

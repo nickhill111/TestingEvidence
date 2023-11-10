@@ -6,6 +6,7 @@ import org.nickhill111.taskManager.data.TaskManagerComponents;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import java.util.List;
 
 public class TasksTabbedPane extends JTabbedPane implements ChangeListener {
 
@@ -40,8 +41,6 @@ public class TasksTabbedPane extends JTabbedPane implements ChangeListener {
         taskManagerComponents.getCompletedTaskTable().clearSelection();
         taskManagerComponents.getCurrentTaskTable().clearSelection();
 
-        JTextArea infoTextArea = taskManagerComponents.getInfoTextArea();
-        infoTextArea.setEditable(false);
-        infoTextArea.setText("");
+        taskManagerComponents.refreshInfoPanel(List.of(), -1);
     }
 }

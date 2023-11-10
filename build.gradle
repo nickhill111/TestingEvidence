@@ -5,7 +5,7 @@ plugins {
 jar {
     manifest {
         attributes(
-                'Main-Class': 'org.nickhill111.taskManager.TaskManagerApplication'
+                'Main-Class': 'org.nickhill111.testManager.TestingEvidenceApplication'
         )
     }
 
@@ -23,7 +23,7 @@ java {
 }
 
 group 'org.nickhill111'
-version '3.0'
+version '2.0'
 
 repositories {
     mavenCentral()
@@ -49,7 +49,6 @@ dependencies {
     implementation group: 'lc.kra.system', name: 'system-hook', version: '3.8'
 
     implementation group: 'com.formdev', name: 'flatlaf', version: '3.2.5'
-
 }
 
 test {

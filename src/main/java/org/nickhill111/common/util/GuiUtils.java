@@ -107,4 +107,11 @@ public class GuiUtils {
     public static double convertZoomValueToScale(int zoomValue) {
         return (double) zoomValue/100;
     }
+
+    public static boolean isDarkTheme() {
+        return switch (UIManager.getLookAndFeel().getName()) {
+            case FlatDarkLaf.NAME, FlatDarculaLaf.NAME, FlatMacDarkLaf.NAME -> true;
+            default -> false;
+        };
+    }
 }

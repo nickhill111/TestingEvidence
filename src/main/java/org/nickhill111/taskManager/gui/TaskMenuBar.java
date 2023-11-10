@@ -65,7 +65,7 @@ public class TaskMenuBar extends JMenuBar {
         functionsMenu.add(addTaskMenuItem);
 
         JMenuItem removeTasksMenuItem = new JMenuItem("Remove tasks");
-        removeTasksMenuItem.addActionListener(e -> functionsService.removeTasks());
+        removeTasksMenuItem.addActionListener(e -> functionsService.removeTask());
         removeTasksMenuItem.setMnemonic(KeyEvent.VK_U);
         removeTasksMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U, InputEvent.CTRL_DOWN_MASK));
         functionsMenu.add(removeTasksMenuItem);

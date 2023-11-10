@@ -1,8 +1,11 @@
 package org.nickhill111.taskManager.gui;
 
+import org.nickhill111.taskManager.data.Comment;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.nickhill111.taskManager.gui.TaskTable.BLOCKED_COLUMN;
 
@@ -18,16 +21,16 @@ public class TaskTableModel extends DefaultTableModel {
         addColumn("Text");
     }
 
-    public void addRow(String task, String priority, boolean isBlocked, LocalDate dateCreated, String text) {
+    public void addRow(String task, String priority, boolean isBlocked, LocalDate dateCreated, List<Comment> text) {
         super.addRow(new Object[]{task, createPriorityComboBox(priority), isBlocked, dateCreated, text});
     }
 
-    public void insertRow(int position, String task, String priority, boolean isBlocked, LocalDate dateCreated, String text) {
+    public void insertRow(int position, String task, String priority, boolean isBlocked, LocalDate dateCreated, List<Comment> text) {
         super.insertRow(position, new Object[]{task, createPriorityComboBox(priority), isBlocked, dateCreated, text});
     }
 
-    private JComboBox<String> createPriorityComboBox(String selectedValue) {
-        JComboBox<String> priorityComboBox = new JComboBox<>(new String[]{selectedValue});
+    private ComboBox createPriorityComboBox(String selectedValue) {
+        ComboBox priorityComboBox = new ComboBox(new String[]{selectedValue});
         priorityComboBox.setSelectedItem(selectedValue);
         return priorityComboBox;
     }

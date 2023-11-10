@@ -5,8 +5,6 @@ import org.nickhill111.common.gui.GenericScrollPane;
 import javax.swing.*;
 import java.awt.*;
 
-import static org.nickhill111.common.util.GuiUtils.PHOTO_SIZE;
-
 public class MainTaskManagerPanel extends JPanel {
 
     public MainTaskManagerPanel() {
@@ -22,11 +20,15 @@ public class MainTaskManagerPanel extends JPanel {
     }
 
     private void addTaskAndInfoSplitPanel() {
-        InfoPanel infoPanel = new InfoPanel();
+        CommentsPanel commentsPanel = new CommentsPanel();
+        NewCommentPanel newCommentPanel = new NewCommentPanel();
+        JSplitPane infoSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, new GenericScrollPane<>(commentsPanel), new GenericScrollPane<>(newCommentPanel));
+        setUpSplitPane(infoSplitPane);
+        infoSplitPane.setResizeWeight(0.75);
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
             new TasksTabbedPane(),
-            new GenericScrollPane<>(infoPanel));
+            infoSplitPane);
         setUpSplitPane(splitPane);
 
         add(splitPane, BorderLayout.CENTER);
@@ -36,8 +38,7 @@ public class MainTaskManagerPanel extends JPanel {
         splitPane.setContinuousLayout(true);
         splitPane.setOneTouchExpandable(true);
         splitPane.setDividerSize(15);
-        splitPane.getLeftComponent().setMinimumSize(new Dimension(PHOTO_SIZE + 50, PHOTO_SIZE + 50));
-        splitPane.getRightComponent().setMinimumSize(new Dimension());
+        splitPane.setResizeWeight(0.2);
         splitPane.setDividerLocation(0.5);
     }
 }

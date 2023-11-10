@@ -1,12 +1,14 @@
 package org.nickhill111.taskManager.service;
 
 import org.nickhill111.common.util.DialogUtils;
+import org.nickhill111.taskManager.data.Comment;
 import org.nickhill111.taskManager.data.TaskManagerComponents;
 import org.nickhill111.taskManager.gui.TaskTable;
 import org.nickhill111.taskManager.gui.TaskTableModel;
 
-import javax.swing.*;
 import java.time.LocalDate;
+import java.util.LinkedList;
+import java.util.List;
 
 import static org.apache.logging.log4j.util.Strings.isNotEmpty;
 import static org.nickhill111.taskManager.data.Priority.MEDIUM;
@@ -20,53 +22,46 @@ public class FunctionsService {
 
         if (isNotEmpty(newTaskName)) {
             TaskTableModel tableModel = taskManagerComponents.getCurrentTaskTable().getModel();
-            tableModel.addRow(newTaskName, MEDIUM.getValue(), false, LocalDate.now(), "");
+            tableModel.addRow(newTaskName, MEDIUM.getValue(), false, LocalDate.now(), new LinkedList<>());
+            taskManagerComponents.getFilter().setText("");
             taskManagerComponents.getCurrentTaskTable().selectRow(tableModel.getRowCount() - 1);
             taskManagerComponents.getTasksTabbedPane().setSelectedIndex(0);
         }
     }
 
-    public void removeTasks() {
+    public void removeTask() {
         TaskTable taskTable = taskManagerComponents.getCurrentTaskTable();
 
         boolean isCurrentTasks = taskManagerComponents.getTasksTabbedPane().isCurrentTasksVisible();
 
         if (!isCurrentTasks) {
             taskTable = taskManagerComponents.getCompletedTaskTable();
+        } else if (taskTable.getEditingRow() >= 0) {
+            taskTable.getCellEditor().stopCellEditing();
         }
 
-        int[] selectedRows = taskTable.getSelectedRows();
+        int selectedRow = taskTable.getSelectedRow();
 
-        if (selectedRows.length >= 1) {
-            TaskTableModel tableModel = taskTable.getModel();
-
-            for (int i = selectedRows.length - 1; i >= 0; i--) {
-                int selectedRow = selectedRows[i];
-
-                if (selectedRow >= 0) {
-                    if (isCurrentTasks) {
-                        taskManagerComponents.getCompletedTaskTable().getModel().addRow(taskTable.getTaskName(selectedRow),
-                            taskTable.getPriority(selectedRow), taskTable.getIsBlocked(selectedRow),
-                            taskTable.getDateCreated(selectedRow), taskTable.getText(selectedRow));
-                    }
-
-                    tableModel.removeRow(selectedRow);
-
-                    if (tableModel.getRowCount() > selectedRow) {
-                        taskTable.selectCurrentRow();
-                    } else if (selectedRow >= 1) {
-                        taskTable.selectRow(selectedRow - 1);
-                    }
-                }
+        if (selectedRow >= 0) {
+            if (isCurrentTasks) {
+                taskManagerComponents.getCompletedTaskTable().getModel().addRow(taskTable.getTaskName(selectedRow),
+                    taskTable.getPriority(selectedRow), taskTable.getIsBlocked(selectedRow),
+                    taskTable.getDateCreated(selectedRow), taskTable.getComments(selectedRow));
             }
 
-            JTextArea infoTextArea = taskManagerComponents.getInfoTextArea();
+            taskTable.getModel().removeRow(taskTable.convertRowIndexToModel(selectedRow));
 
-            int selectedRow = taskTable.getSelectedRow();
-            boolean isRowSelected = selectedRow >= 0;
-            infoTextArea.setText(isRowSelected ? taskTable.getText(selectedRow) : null);
-            infoTextArea.setEditable(isRowSelected);
+            if (selectedRow >= 1) {
+                selectedRow--;
+            }
+
+            taskTable.selectRow(selectedRow);
         }
+
+        selectedRow = taskTable.getSelectedRow();
+
+        List<Comment> comments = taskTable.getComments(selectedRow);
+        taskManagerComponents.refreshInfoPanel(comments, selectedRow);
     }
 
     public void moveTaskUp() {
@@ -86,28 +81,18 @@ public class FunctionsService {
 
         TaskTable taskTable = taskManagerComponents.getCurrentTaskTable();
 
+        if (taskTable.getEditingRow() >= 0) {
+            taskTable.getCellEditor().stopCellEditing();
+        }
+
         int selectedIndex = taskTable.getSelectedRow();
         int positionToSwapWith = selectedIndex + positionToMoveBy;
 
-        if (!taskManagerComponents.getTasksTabbedPane().isCurrentTasksVisible() || areMultipleTasksSelected()
+        if (!taskManagerComponents.getTasksTabbedPane().isCurrentTasksVisible()
             || taskTable.getRowCount() <= positionToSwapWith || positionToSwapWith < 0) {
             return;
         }
 
-        JTextArea infoTextArea = taskManagerComponents.getInfoTextArea();
-        taskTable.setText(selectedIndex, infoTextArea.getText());
-
         taskTable.swapTasksInTable(selectedIndex, positionToSwapWith);
-    }
-
-    private boolean areMultipleTasksSelected() {
-        TaskTable taskTable = taskManagerComponents.getCurrentTaskTable();
-        int[] selectedRows = taskTable.getSelectedRows();
-
-        if (selectedRows.length > 1) {
-            DialogUtils.cantMoveTasks();
-        }
-
-        return selectedRows.length != 1;
     }
 }
