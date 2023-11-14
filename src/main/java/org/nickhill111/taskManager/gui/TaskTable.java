@@ -1,6 +1,7 @@
 package org.nickhill111.taskManager.gui;
 
 import org.nickhill111.common.data.Config;
+import org.nickhill111.common.data.TaskManagerConfigDetails;
 import org.nickhill111.taskManager.data.AllTasks;
 import org.nickhill111.taskManager.data.Comment;
 import org.nickhill111.taskManager.data.Task;
@@ -24,11 +25,12 @@ import static org.nickhill111.taskManager.gui.TasksTabbedPane.TASK_NAME_COLUMN;
 
 public class TaskTable extends JTable {
     private final TaskManagerComponents taskManagerComponents = TaskManagerComponents.getInstance();
+    private final Config config = Config.getInstance();
 
     private final boolean areCellsEditable;
 
-    public TaskTable(TaskTableModel model, boolean areCellsEditable) {
-        super(model);
+    public TaskTable(boolean areCellsEditable) {
+        super(new TaskTableModel());
         this.areCellsEditable = areCellsEditable;
 
         setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -38,7 +40,7 @@ public class TaskTable extends JTable {
         AllTasks existingTasks = Config.readTasks();
         if (nonNull(existingTasks)) {
             Tasks tasksToAdd = areCellsEditable ? existingTasks.getCurrentTasks() : existingTasks.getCompletedTasks();
-            addTasksToModel(model, tasksToAdd);
+            addTasksToModel(getModel(), tasksToAdd);
         }
 
         ListSelectionModel selectionModel = getSelectionModel();
@@ -52,6 +54,34 @@ public class TaskTable extends JTable {
             }
         });
 
+        setTableHeader();
+        orderColumnsFromConfig();
+
+        putClientProperty("terminateEditOnFocusLost", true);
+    }
+
+    private void orderColumnsFromConfig() {
+        TaskManagerConfigDetails taskManagerConfig = config.getConfigDetails().getTaskManagerConfigDetails();
+
+        String[] savedColumnOrder = areCellsEditable ? taskManagerConfig.getCurrentTasksOrder() : taskManagerConfig.getCompletedTasksOrder();
+        if (nonNull(savedColumnOrder)) {
+            for (int i = 0; i < savedColumnOrder.length; i++) {
+                int columnIndex = getColumnIndex(savedColumnOrder[i]);
+                if (columnIndex >= 0) {
+                    moveColumn(columnIndex, i);
+                }
+            }
+        }
+    }
+
+    private int getColumnIndex(String header) {
+        for (int i=0; i < getColumnCount(); i++) {
+            if (getColumnName(i).equals(header)) return i;
+        }
+        return -1;
+    }
+
+    private void setTableHeader() {
         setTableHeader(new JTableHeader(getColumnModel()) {
             @Override
             public void setDraggedColumn(TableColumn column) {
@@ -64,7 +94,6 @@ public class TaskTable extends JTable {
                         columnOrder[i] = getColumnName(i);
                     }
 
-                    Config config = Config.getInstance();
                     if (areCellsEditable) {
                         config.getConfigDetails().getTaskManagerConfigDetails().setCurrentTasksOrder(columnOrder);
                     } else {
@@ -75,8 +104,6 @@ public class TaskTable extends JTable {
                 }
             }
         });
-
-        putClientProperty("terminateEditOnFocusLost", true);
     }
 
     private void addTasksToModel(TaskTableModel model, Tasks tasks) {

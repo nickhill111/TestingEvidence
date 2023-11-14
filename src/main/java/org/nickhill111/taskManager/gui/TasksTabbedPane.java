@@ -29,7 +29,7 @@ public class TasksTabbedPane extends JTabbedPane implements ChangeListener {
     }
 
     private void addTasksTab() {
-        TaskTable taskTable = new TaskTable(new TaskTableModel(), true);
+        TaskTable taskTable = new TaskTable(true);
         taskManagerComponents.setCurrentTaskTable(taskTable);
 
         GenericScrollPane scrollPane = new GenericScrollPane(taskTable);
@@ -39,7 +39,7 @@ public class TasksTabbedPane extends JTabbedPane implements ChangeListener {
     }
 
     private void addHistoryTab() {
-        TaskTable taskTable = new TaskTable(new TaskTableModel(), false);
+        TaskTable taskTable = new TaskTable(false);
         taskManagerComponents.setCompletedTaskTable(taskTable);
 
         GenericScrollPane scrollPane = new GenericScrollPane(taskTable);
