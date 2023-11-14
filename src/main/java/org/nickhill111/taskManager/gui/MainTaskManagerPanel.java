@@ -22,7 +22,7 @@ public class MainTaskManagerPanel extends JPanel {
     private void addTaskAndInfoSplitPanel() {
         CommentsPanel commentsPanel = new CommentsPanel();
         NewCommentPanel newCommentPanel = new NewCommentPanel();
-        JSplitPane infoSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, new GenericScrollPane<>(commentsPanel), new GenericScrollPane<>(newCommentPanel));
+        JSplitPane infoSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, new GenericScrollPane(commentsPanel), new GenericScrollPane(newCommentPanel));
         setUpSplitPane(infoSplitPane);
         infoSplitPane.setResizeWeight(0.75);
 

@@ -4,6 +4,7 @@ import org.nickhill111.common.gui.GenericScrollPane;
 import org.nickhill111.taskManager.data.TaskManagerComponents;
 
 import javax.swing.*;
+import javax.swing.border.BevelBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.util.List;
@@ -23,13 +24,23 @@ public class TasksTabbedPane extends JTabbedPane implements ChangeListener {
     }
 
     private void addTasksTab() {
-        CurrentTasksPanel currentTasksPanel = new CurrentTasksPanel();
-        addTab("Current Tasks", new GenericScrollPane<>(currentTasksPanel));
+        TaskTable taskTable = new TaskTable(new TaskTableModel(), true);
+        taskManagerComponents.setCurrentTaskTable(taskTable);
+
+        GenericScrollPane scrollPane = new GenericScrollPane(taskTable);
+        scrollPane.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
+
+        addTab("Current Tasks", scrollPane);
     }
 
     private void addHistoryTab() {
-        CompletedTasksPanel completedTasksPanel = new CompletedTasksPanel();
-        addTab("Completed Tasks", new GenericScrollPane<>(completedTasksPanel));
+        TaskTable taskTable = new TaskTable(new TaskTableModel(), false);
+        taskManagerComponents.setCompletedTaskTable(taskTable);
+
+        GenericScrollPane scrollPane = new GenericScrollPane(taskTable);
+        scrollPane.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
+
+        addTab("Completed Tasks", scrollPane);
     }
 
     public boolean isCurrentTasksVisible() {

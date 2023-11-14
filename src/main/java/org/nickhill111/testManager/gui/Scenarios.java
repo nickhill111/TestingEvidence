@@ -10,6 +10,7 @@ import static org.nickhill111.testManager.model.TabNames.REGRESSION;
 import static org.nickhill111.testManager.model.TabNames.SCENARIO;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
@@ -68,7 +69,7 @@ public class Scenarios extends JTabbedPane implements MouseListener {
                 .toList();
             ScenarioPanel scenarioPanel = new ScenarioPanel(i, filesForTab);
 
-            GenericScrollPane<ScenarioPanel> scrollPane = new GenericScrollPane<>(scenarioPanel);
+            GenericScrollPane scrollPane = new GenericScrollPane(scenarioPanel);
 
             String title = SCENARIO.getValue() + "_" + i;
 
@@ -98,7 +99,7 @@ public class Scenarios extends JTabbedPane implements MouseListener {
 
         ScenarioPanel scenarioPanel = new ScenarioPanel(scenarioNumber);
 
-        GenericScrollPane<ScenarioPanel> scrollPane = new GenericScrollPane<>(scenarioPanel);
+        GenericScrollPane scrollPane = new GenericScrollPane(scenarioPanel);
 
         addTab(SCENARIO.getValue() + "_" + scenarioNumber, scrollPane);
 
@@ -117,7 +118,7 @@ public class Scenarios extends JTabbedPane implements MouseListener {
         for (RegressionTab regressionTab : RegressionTab.values()) {
             ScenarioPanel scenarioPanel = new ScenarioPanel(regressionTab.getId());
 
-            GenericScrollPane<ScenarioPanel> scrollPane = new GenericScrollPane<>(scenarioPanel);
+            GenericScrollPane scrollPane = new GenericScrollPane(scenarioPanel);
 
             addTab(regressionTab.getValue(), scrollPane);
         }
@@ -174,7 +175,7 @@ public class Scenarios extends JTabbedPane implements MouseListener {
 
             ScenarioPanel scenarioPanel = new ScenarioPanel(regressionTab.getId(), filesForTab);
 
-            GenericScrollPane<ScenarioPanel> scrollPane = new GenericScrollPane<>(scenarioPanel);
+            GenericScrollPane scrollPane = new GenericScrollPane(scenarioPanel);
 
             String tabName = regressionTab.getValue();
 
@@ -194,8 +195,8 @@ public class Scenarios extends JTabbedPane implements MouseListener {
         List<ScenarioPanel> scenarioPanels = new LinkedList<>();
 
         for (int i = 0; i < getTabCount(); i++) {
-            GenericScrollPane<?> scrollPane = ((GenericScrollPane<?>) getComponentAt(i));
-            JPanel panel = scrollPane.getPanel();
+            GenericScrollPane scrollPane = ((GenericScrollPane) getComponentAt(i));
+            Component panel = scrollPane.getComponent();
 
             if (panel instanceof ScenarioPanel scenarioPanel) {
                 scenarioPanels.add(scenarioPanel);
@@ -205,14 +206,14 @@ public class Scenarios extends JTabbedPane implements MouseListener {
         return scenarioPanels;
     }
 
-    private void selectNewComponent(GenericScrollPane<ScenarioPanel> scrollPane) {
+    private void selectNewComponent(GenericScrollPane scrollPane) {
         setSelectedComponent(scrollPane);
         GuiUtils.refreshComponent(this);
     }
 
     public ScenarioPanel getSelectedScenario() {
-        if (getSelectedComponent() instanceof GenericScrollPane<?> scrollPane) {
-            JPanel panel = scrollPane.getPanel();
+        if (getSelectedComponent() instanceof GenericScrollPane scrollPane) {
+            Component panel = scrollPane.getComponent();
 
             if (panel instanceof ScenarioPanel scenarioPanel) {
                 return scenarioPanel;
@@ -259,9 +260,11 @@ public class Scenarios extends JTabbedPane implements MouseListener {
 
             JMenuItem removeAllEvidence = new JMenuItem("Remove all evidence");
             removeAllEvidence.addActionListener(e1 -> {
-                if (getComponentAt(selectedIndex) instanceof GenericScrollPane<?> scrollPane) {
-                    scrollPane.getPanel().removeAll();
-                    GuiUtils.refreshComponent(scrollPane);
+                if (getComponentAt(selectedIndex) instanceof GenericScrollPane scrollPane) {
+                    if (scrollPane.getComponent() instanceof JPanel panel) {
+                        panel.removeAll();
+                        GuiUtils.refreshComponent(scrollPane);
+                    }
                 }
             });
             menu.add(removeAllEvidence);

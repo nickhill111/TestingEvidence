@@ -2,7 +2,6 @@ package org.nickhill111.taskManager.gui;
 
 import org.nickhill111.taskManager.data.Comment;
 
-import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.time.LocalDate;
 import java.util.List;
@@ -12,13 +11,7 @@ import static org.nickhill111.taskManager.gui.TaskTable.BLOCKED_COLUMN;
 public class TaskTableModel extends DefaultTableModel {
 
     public TaskTableModel() {
-        super();
-
-        addColumn("Task");
-        addColumn("Priority");
-        addColumn("Blocked");
-        addColumn("Date created");
-        addColumn("Text");
+        super(new Object[]{"Task", "Priority", "Blocked", "Date created", "Text"}, 0);
     }
 
     public void addRow(String task, String priority, boolean isBlocked, LocalDate dateCreated, List<Comment> text) {

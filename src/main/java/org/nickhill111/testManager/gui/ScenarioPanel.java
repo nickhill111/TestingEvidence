@@ -66,7 +66,7 @@ public class ScenarioPanel extends JPanel {
         constraints.gridx = getComponentCount();
         add(new Photo(screenshot), constraints);
 
-        if (nonNull(getParent()) && getParent().getParent() instanceof GenericScrollPane<?> scrollPane) {
+        if (nonNull(getParent()) && getParent().getParent() instanceof GenericScrollPane scrollPane) {
             scrollPane.scrollToTheRight();
         }
     }

@@ -68,9 +68,6 @@ public class TaskTable extends JTable {
         priorityColumn.setCellRenderer(new PriorityRenderer());
         priorityColumn.setCellEditor(new PriorityCellEditor());
 
-        TableColumn blockedColumn = columnModel.getColumn(BLOCKED_COLUMN);
-        blockedColumn.setMaxWidth(24);
-
         getColumnModel().getColumn(TASK_COMMENTS_COLUMN).setMinWidth(0);
         getColumnModel().getColumn(TASK_COMMENTS_COLUMN).setMaxWidth(0);
         getColumnModel().getColumn(TASK_COMMENTS_COLUMN).setWidth(0);

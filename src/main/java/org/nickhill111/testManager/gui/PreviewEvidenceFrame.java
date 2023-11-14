@@ -30,7 +30,7 @@ public class PreviewEvidenceFrame extends JFrame implements ComponentListener, M
 
         this.previewEvidencePanel = new PreviewEvidencePanel(originalImage,
             convertZoomValueToScale(config.getConfigDetails().getTestManagerConfigDetails().getPreviewZoomValue()));
-        add(new GenericScrollPane<>(previewEvidencePanel));
+        add(new GenericScrollPane(previewEvidencePanel));
 
         ScenarioPanel selectedScenario = TestManagerComponents.getInstance().getUsers().getSelectedScenarios().getSelectedScenario();
         this.toolBar = new PreviewEvidenceToolBar(selectedScenario, previewEvidencePanel);

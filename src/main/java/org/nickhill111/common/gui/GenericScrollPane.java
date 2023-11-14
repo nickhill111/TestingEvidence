@@ -3,14 +3,15 @@ package org.nickhill111.common.gui;
 import lombok.Getter;
 
 import javax.swing.*;
+import java.awt.*;
 
 @Getter
-public class GenericScrollPane<T extends JPanel> extends JScrollPane {
-    private final T panel;
+public class GenericScrollPane extends JScrollPane {
+    private final Component component;
 
-    public GenericScrollPane(T panel) {
-        super(panel);
-        this.panel = panel;
+    public GenericScrollPane(Component component) {
+        super(component);
+        this.component = component;
 
         setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
