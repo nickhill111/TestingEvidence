@@ -8,20 +8,21 @@ import org.nickhill111.taskManager.data.TaskManagerComponents;
 import org.nickhill111.taskManager.data.Tasks;
 
 import javax.swing.*;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import java.time.LocalDate;
-import java.util.LinkedList;
 import java.util.List;
 
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static org.nickhill111.taskManager.gui.TasksTabbedPane.BLOCKED_COLUMN;
+import static org.nickhill111.taskManager.gui.TasksTabbedPane.DATE_CREATED_COLUMN;
+import static org.nickhill111.taskManager.gui.TasksTabbedPane.PRIORITY_COLUMN;
+import static org.nickhill111.taskManager.gui.TasksTabbedPane.TASK_COMMENTS_COLUMN;
+import static org.nickhill111.taskManager.gui.TasksTabbedPane.TASK_NAME_COLUMN;
 
 public class TaskTable extends JTable {
-    public static final int TASK_NAME_COLUMN = 0;
-    public static final int PRIORITY_COLUMN = 1;
-    public static final int BLOCKED_COLUMN = 2;
-    public static final int DATE_CREATED_COLUMN = 3;
-    public static final int TASK_COMMENTS_COLUMN = 4;
     private final TaskManagerComponents taskManagerComponents = TaskManagerComponents.getInstance();
 
     private final boolean areCellsEditable;
@@ -46,8 +47,32 @@ public class TaskTable extends JTable {
             int selectedRow = getSelectedRow();
 
             if (selectedRow != -1) {
-                List<Comment> comments = getComments(selectedRow);
+                List<Comment> comments = getModel().getComments(selectedRow);
                 taskManagerComponents.refreshInfoPanel(comments, selectedRow);
+            }
+        });
+
+        setTableHeader(new JTableHeader(getColumnModel()) {
+            @Override
+            public void setDraggedColumn(TableColumn column) {
+                boolean finished = nonNull(draggedColumn) && isNull(column);
+                super.setDraggedColumn(column);
+
+                if (finished) {
+                    String[] columnOrder = new String[getColumnCount()];
+                    for (int i = 0; i < getColumnCount(); i++) {
+                        columnOrder[i] = getColumnName(i);
+                    }
+
+                    Config config = Config.getInstance();
+                    if (areCellsEditable) {
+                        config.getConfigDetails().getTaskManagerConfigDetails().setCurrentTasksOrder(columnOrder);
+                    } else {
+                        config.getConfigDetails().getTaskManagerConfigDetails().setCompletedTasksOrder(columnOrder);
+                    }
+
+                    config.saveTaskManagerFrameConfigDetails();
+                }
             }
         });
 
@@ -74,78 +99,14 @@ public class TaskTable extends JTable {
 
     }
 
-    public String getTaskName(int row) {
-        return getValueAt(row, TASK_NAME_COLUMN).toString();
-    }
-
-    public String getPriority(int row) {
-        Object object = getValueAt(row, PRIORITY_COLUMN);
-        return getPriority(object);
-    }
-    public String getPriority(Object object) {
-        if (object instanceof ComboBox comboBox) {
-            return String.valueOf(comboBox.getSelectedItem());
-        }
-
-        return (String) object;
-    }
-
-    public boolean getIsBlocked(int row) {
-        Object object = getValueAt(row, BLOCKED_COLUMN);
-        return getIsBlocked(object);
-    }
-
-    public boolean getIsBlocked(Object object) {
-        return (boolean) object;
-    }
-
-
-    public List<Comment> getComments(int row) {
-        if (row < 0 || row > getRowCount() - 1) {
-            return new LinkedList<>();
-        }
-
-        Object value = getValueAt(row, TASK_COMMENTS_COLUMN);
-        return getComments(value);
-    }
-
-    public List<Comment> getComments(Object value) {
-        if (value instanceof List<?> list) {
-            return new LinkedList<>(list.stream().map(ob -> (Comment) ob).toList());
-        }
-
-        return new LinkedList<>();
-    }
-
-    public LocalDate getDateCreated(int row) {
-        Object dateAsObject = getValueAt(row, DATE_CREATED_COLUMN);
-        return getDateCreated(dateAsObject);
-    }
-
-    public LocalDate getDateCreated(Object dateAsObject) {
-        return nonNull(dateAsObject) ? LocalDate.parse(dateAsObject.toString()) : null;
-    }
-
-    public void removeComment(int row, Comment comment) {
-        List<Comment> comments = getComments(row);
-        comments.remove(comment);
-        setValueAt(comments, row, TASK_COMMENTS_COLUMN);
-    }
-
-    public void addComment(int row, Comment comment) {
-        List<Comment> comments = getComments(row);
-        comments.add(comment);
-        setValueAt(comments, row, TASK_COMMENTS_COLUMN);
-    }
-
     public void swapTasksInTable(int selectedIndex, int positionToSwapWith) {
-        String taskName = getTaskName(selectedIndex);
-        String taskPriority = getPriority(selectedIndex);
-        boolean isBlocked = getIsBlocked(selectedIndex);
-        LocalDate dateCreated = getDateCreated(selectedIndex);
-        List<Comment> taskText = getComments(selectedIndex);
-
         TaskTableModel model = getModel();
+        String taskName = model.getTaskName(selectedIndex);
+        String taskPriority = model.getPriority(selectedIndex);
+        boolean isBlocked = model.getIsBlocked(selectedIndex);
+        LocalDate dateCreated = model.getDateCreated(selectedIndex);
+        List<Comment> taskText = model.getComments(selectedIndex);
+
         model.removeRow(selectedIndex);
         model.insertRow(positionToSwapWith, taskName, taskPriority, isBlocked, dateCreated, taskText);
 
@@ -168,19 +129,21 @@ public class TaskTable extends JTable {
 
     public Tasks getTasks() {
         Tasks tasks = new Tasks();
+        TaskTableModel model = getModel();
 
-        tasks.addAll(getModel().getDataVector().stream()
+        tasks.addAll(model.getDataVector().stream()
             .map(vector -> new Task(vector.get(TASK_NAME_COLUMN).toString(),
-                getPriority(vector.get(PRIORITY_COLUMN)),
-                getIsBlocked(vector.get(BLOCKED_COLUMN)),
-                getDateCreated(vector.get(DATE_CREATED_COLUMN)),
-                getComments(vector.get(TASK_COMMENTS_COLUMN)))).toList());
+                model.getPriority(vector.get(PRIORITY_COLUMN)),
+                model.getIsBlocked(vector.get(BLOCKED_COLUMN)),
+                model.getDateCreated(vector.get(DATE_CREATED_COLUMN)),
+                model.getComments(vector.get(TASK_COMMENTS_COLUMN)))).toList());
 
         return tasks;
     }
 
     @Override
     public boolean isCellEditable(int row, int column) {
-        return areCellsEditable && column != DATE_CREATED_COLUMN && column != TASK_COMMENTS_COLUMN;
+        String columnName = getColumnName(column);
+        return areCellsEditable && !columnName.equals("Date Created") && !columnName.equals("Text");
     }
 }

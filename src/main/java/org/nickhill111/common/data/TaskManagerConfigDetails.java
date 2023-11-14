@@ -9,6 +9,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+
 import static java.util.Objects.isNull;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -20,6 +22,12 @@ import static java.util.Objects.isNull;
 public class TaskManagerConfigDetails {
     @JsonProperty("frameConfigDetails")
     private FrameConfigDetails frameConfigDetails;
+
+    @JsonProperty("currentTasksOrder")
+    private String[] currentTasksOrder;
+
+    @JsonProperty("completedTasksOrder")
+    private String[] completedTasksOrder;
 
     @JsonIgnore
     public FrameConfigDetails getFrameConfigDetails() {

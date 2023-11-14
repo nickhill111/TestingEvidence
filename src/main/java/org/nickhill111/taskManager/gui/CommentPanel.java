@@ -43,7 +43,7 @@ public class CommentPanel extends JPanel {
             int selectedRow = taskManagerComponents.getCurrentTaskTable().getSelectedRow();
 
             if (selectedRow >= 0) {
-                taskManagerComponents.getCurrentTaskTable().addComment(selectedRow, new Comment(comment, timeCreated));
+                taskManagerComponents.getCurrentTaskTable().getModel().addComment(selectedRow, new Comment(comment, timeCreated));
             }
         }
 
@@ -79,7 +79,7 @@ public class CommentPanel extends JPanel {
                 Container parent = getParent();
                 parent.remove(this);
                 GuiUtils.refreshComponent(parent);
-                taskManagerComponents.getCurrentTaskTable().removeComment(selectedRow, new Comment(comment, timeCreated));
+                taskManagerComponents.getCurrentTaskTable().getModel().removeComment(selectedRow, new Comment(comment, timeCreated));
             }
         });
         add(removeButton, constraints);

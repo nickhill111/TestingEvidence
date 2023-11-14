@@ -40,13 +40,14 @@ public class FunctionsService {
             taskTable.getCellEditor().stopCellEditing();
         }
 
+        TaskTableModel model = taskTable.getModel();
         int selectedRow = taskTable.getSelectedRow();
 
         if (selectedRow >= 0) {
             if (isCurrentTasks) {
-                taskManagerComponents.getCompletedTaskTable().getModel().addRow(taskTable.getTaskName(selectedRow),
-                    taskTable.getPriority(selectedRow), taskTable.getIsBlocked(selectedRow),
-                    taskTable.getDateCreated(selectedRow), taskTable.getComments(selectedRow));
+                taskManagerComponents.getCompletedTaskTable().getModel().addRow(model.getTaskName(selectedRow),
+                    model.getPriority(selectedRow), model.getIsBlocked(selectedRow),
+                    model.getDateCreated(selectedRow), model.getComments(selectedRow));
             }
 
             taskTable.getModel().removeRow(taskTable.convertRowIndexToModel(selectedRow));
@@ -60,7 +61,7 @@ public class FunctionsService {
 
         selectedRow = taskTable.getSelectedRow();
 
-        List<Comment> comments = taskTable.getComments(selectedRow);
+        List<Comment> comments = model.getComments(selectedRow);
         taskManagerComponents.refreshInfoPanel(comments, selectedRow);
     }
 
